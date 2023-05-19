@@ -1,5 +1,7 @@
 # Cookbooker
 
+[toasterparty.net/cookbooker](https://toasterparty.net/cookbooker)
+
 ## Vue
 
 ### Install NodeJS
@@ -9,16 +11,11 @@ sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && sudo apt-
 
 ### Build and Run
 
-```
-cd cookbooker
-npm install
-npm run format
-npm run dev
-```
+`./tools/start-cookbooker.sh`
 
 ## Supabase
 
-Use [this](https://supabase.com/docs/guides/self-hosting#api-keys) web tool to generate the following for `.env`:
+Use [this](https://supabase.com/docs/guides/self-hosting#api-keys) web tool to generate the following:
 
 - A JWT secret to use for `POSTGRES_PASSWORD`
 
@@ -28,4 +25,20 @@ Use [this](https://supabase.com/docs/guides/self-hosting#api-keys) web tool to g
 
 - Generated token using `SERVICE_KEY` for `SERVICE_ROLE_KEY`
 
-Then, copy anon and service keys to `services/cookbooker/supabase/docker/volumes/api/kong.yml`.
+Then, create a file called `supabase/config.env` that looks like this:
+
+```
+POSTGRES_PASSWORD=<redacted>
+JWT_SECRET=<redacted>
+SERVICE_ROLE_KEY=<redacted>
+SMTP_ADMIN_EMAIL=<redacted>
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=<redacted>
+SMTP_PASS=<redacted>
+SMTP_SENDER_NAME=Admin
+```
+
+...but with your secrets/information.
+
+Then run `./tools/start-supabase.sh`

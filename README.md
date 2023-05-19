@@ -5,8 +5,17 @@
 ## Vue
 
 ### Install NodeJS
+
 ```
 sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && sudo apt-get install -y nodejs
+sudo npm install pm2 -g
+pm2 startup
+```
+
+Then run the command that was printed. For example:
+
+```
+sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u toaster --hp /home/toaster
 ```
 
 ### Build and Run

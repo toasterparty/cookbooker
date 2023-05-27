@@ -1,3 +1,21 @@
+<template>
+  <div class="recipes">
+    <h1>Recipes</h1>
+    <div v-if="recipes.length === 0">
+      <ul>
+        <li>⌛</li>
+      </ul>
+    </div>
+    <div v-else>
+      <ul>
+        <li v-for="recipe in recipes" :key="recipe.recipe_id">
+          <a :href="'/recipes/' + recipe.recipe_id" target="_blank">{{ recipe.name }}</a>
+        </li>
+      </ul>
+    </div>
+</div>
+</template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient'
@@ -13,17 +31,6 @@ onMounted(() => {
   getRecipes()
 })
 </script>
-
-<template>
-  <div class="recipes">
-    <h1>Recipes</h1>
-    <ul>
-      <li v-for="recipe in recipes" :key="recipe.recipe_id">
-        <a :href="'/recipes/' + recipe.recipe_id" target="_blank">{{ recipe.name }}</a>
-      </li>
-    </ul>
-  </div>
-</template>
 
 <script>
 export default {

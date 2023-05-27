@@ -1,7 +1,7 @@
 <template>
   <div class="recipes">
     <h1>Recipes</h1>
-    <div v-if="recipes.length === 0">
+    <div v-if="!recipes">
       <ul>
         <li>⌛</li>
       </ul>
@@ -16,24 +16,18 @@
 </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { supabase } from '../lib/supabaseClient'
-
-const recipes = ref([])
-
-async function getRecipes() {
-  const { data } = await supabase.from('recipes').select()
-  recipes.value = data
-}
-
-onMounted(() => {
-  getRecipes()
-})
-</script>
-
 <script>
+import { supabase } from '../lib/supabaseClient'
 export default {
-  name: 'recipes'
+  name: 'recipes',
+  data() {
+    return {
+      recipes: null
+    };
+  },
+  async mounted() {
+    const { data } = await supabase.from('recipes').select()
+    this.recipes = data
+  },
 }
 </script>

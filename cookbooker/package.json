@@ -12,6 +12,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.21.0",
     "vue": "^3.2.47",
+    "vue-router": "^4.2.1",
     "vuetify": "^3.2.2"
   },
   "devDependencies": {

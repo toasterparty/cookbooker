@@ -2,20 +2,25 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from './lib/supabaseClient'
 
-const countries = ref([])
+const recipes = ref([])
 
-async function getCountries() {
-  const { data } = await supabase.from('countries').select()
-  countries.value = data
+async function getRecipes() {
+  const { data } = await supabase.from('recipes').select()
+  recipes.value = data
 }
 
 onMounted(() => {
-  getCountries()
+  getRecipes()
 })
 </script>
 
 <template>
-  <ul>
-    <li v-for="country in countries" :key="country.id">{{ country.name }}</li>
-  </ul>
+  <div>
+    <h1>Cookbooker</h1>
+    <ul>
+      <li v-for="recipe in recipes" :key="recipe.recipe_id">
+        <a :href="'/recipes/' + recipe.recipe_id" target="_blank">{{ recipe.name }}</a>
+      </li>
+    </ul>
+  </div>
 </template>

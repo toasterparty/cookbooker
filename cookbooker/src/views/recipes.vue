@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import { supabase } from '../lib/supabaseClient'
+import * as api from '../lib/supabase_api'
+
 export default {
   name: 'recipes',
   data() {
@@ -26,8 +27,7 @@ export default {
     };
   },
   async mounted() {
-    const { data } = await supabase.from('recipes').select()
-    this.recipes = data
+    this.recipes = await api.get_all_recipes()
   },
 }
 </script>

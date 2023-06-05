@@ -16,7 +16,7 @@ fi
 source $CONF_FILE
 
 # Generate Kong.yml with secrets
-cp -r $SUPABASE_DIR/default_kong.yml $KONG_YAML
+mkdir -p $SUPABASE_DIR/volumes/api/
 LINE=$(grep -n "username: anon" $KONG_YAML | cut -d ":" -f1)
 (( LINE+=2 ))
 sed -i "${LINE}s/.*/      - key: ${ANON_KEY}/" "$KONG_YAML"

@@ -2,12 +2,20 @@
   .ingredient {
     display: inline;
   }
+
+header > h1 { display: inline-block; }
+header span { margin-left: 3px; vertical-align: super; font-size: smaller; }
 </style>
 
 <template>
   <div class="recipe">
     <div v-if="recipe">
-      <h1>{{ recipe.name }}</h1>
+      <header>
+        <h1>{{ recipe.name }}</h1>
+        <span>
+          <a :href="'/edit/' + this.$route.params.recipe_id">edit</a>
+        </span>
+      </header>
       <br>
       <p>[image]</p>
       <br>
@@ -19,7 +27,7 @@
         <p v-if="ingredient.units" class="ingredient">{{ ingredient.quantity }} {{ ingredient.units }}s {{ ingredient.name }}</p>
         <p v-else class="ingredient">{{ ingredient.quantity }} {{ ingredient.name }}s</p>
       </li>
-      <br>
+      <br> <!-- TODO: CSS real good -->
       <h2>Equipment</h2>
       <br>
       <p>I might not do this</p>
@@ -53,12 +61,11 @@ export default {
       ingredients: null,
     };
   },
-  async mounted() {
+  async created() {
     const recipe_id = this.$route.params.recipe_id;
     this.recipe = await api.get_recipe(recipe_id);
     this.steps = await api.get_steps_for_recipe(recipe_id);
     this.ingredients = await api.get_ingredients_for_recipe(recipe_id);
-    console.log(this.ingredients);
   },
 }
 </script>

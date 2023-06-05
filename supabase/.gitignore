@@ -3,3 +3,4 @@ volumes/db/data
 volumes/storage
 volumes/logs
 volumes/api/kong.yml
+volumes.bak/

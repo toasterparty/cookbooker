@@ -1,5 +1,7 @@
 import { supabase } from './supabase_client'
 
+/* Recipe Lookup */
+
 export async function get_all_recipes() {
   const { data } = await supabase.from('recipes').select()
   return data
@@ -147,12 +149,10 @@ export async function get_ingredients_for_recipe(recipe_id) {
     for (var i = 0; i < data.length; i++) {
       const ingredient = await get_ingredient(data[i].ingredient_id);
       var units;
-      if (data[i].unit_id == null)
-      {
+      if (data[i].unit_id == null) {
         units = null;
       }
-      else
-      {
+      else {
         const unit = await get_unit(data[i].unit_id);
         units = unit.name;
       }
@@ -170,5 +170,36 @@ export async function get_ingredients_for_recipe(recipe_id) {
 
   } catch (error) {
     console.error('Error fetching ingredients:', error.message);
+  }
+}
+
+/* Recipe Modification */
+
+export async function update_recipe(recipe_id, recipe) {
+  try {
+    const { data, error } = await supabase
+      .from('recipes')
+      .update(
+        {
+          category_id: recipe.category_id,
+          name: recipe.name,
+          image: recipe.image,
+          servings: recipe.servings,
+          calories_per_serving: recipe.calories_per_serving,
+          prep_time_m: recipe.prep_time_m,
+          cook_time_m: recipe.cook_time_m,
+          preamble: recipe.preamble,
+          source: recipe.source,
+        }
+      )
+      .eq('recipe_id', recipe_id);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
   }
 }

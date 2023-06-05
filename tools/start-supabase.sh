@@ -29,3 +29,6 @@ sed -i "${LINE}s/.*/      - key: ${SERVICE_ROLE_KEY}/" "$KONG_YAML"
 # Start Docker Containers
 cd $SUPABASE_DIR
 sudo docker compose --env-file $SUPABASE_DIR/.env --env-file $CONF_FILE up -d
+
+# Modify permissions so that they can be tracked by git
+# sudo chmod -R a+rX $SUPABASE_DIR/volumes/

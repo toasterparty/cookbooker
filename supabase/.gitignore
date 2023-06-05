@@ -1,6 +1,14 @@
 config.env
-volumes/db/data
-volumes/storage
-volumes/logs
+volumes/db/data/
+volumes/backups/
+# volumes/db/data/base/
+# volumes/db/data/global/
+# volumes/db/data/pg_logical/
+# volumes/db/data/pg_xact/
+# volumes/db/data/pg_stat_tmp/
+# volumes/db/data/pg_wal/
+
+volumes/storage/
+volumes/logs/
 volumes/api/kong.yml
 volumes.bak/

@@ -9,11 +9,11 @@ BACKUP_DIR=$SUPABASE_DIR/volumes/backups
 DATETIME=$(date +"%Y%m%d_%H%M%S")
 BACKUP_FILENAME="${DATETIME}_backup.sql"
 
+# Ensure sufficient permissions to make a backup
+# sudo docker exec supabase-db psql --host=127.0.0.1 --port=5432 --username=supabase_admin --dbname=postgres -c 'ALTER ROLE postgres SUPERUSER;'
+
 # Make the backup
-# Might have to run:
-#   ALTER ROLE postgres SUPERUSER;
-# for this to work
-sudo docker exec -e BACKUP_FILENAME="$BACKUP_FILENAME" supabase-db pg_dumpall --clean --host=127.0.0.1 --port=5432 --database=postgres --username=postgres --file=/backups/$BACKUP_FILENAME
+sudo docker exec -e BACKUP_FILENAME="$BACKUP_FILENAME" supabase-db pg_dumpall --clean --host=127.0.0.1 --port=5432 --database=postgres --username=supabase_admin --file=/backups/$BACKUP_FILENAME
 
 # Make the backup accessible
 sudo chmod -R 777 $SUPABASE_DIR/volumes/backups/

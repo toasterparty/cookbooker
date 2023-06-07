@@ -32,7 +32,7 @@ sudo rm -rf $SUPABASE_DIR/volumes/db/data
 $TOP_DIR/tools/start-supabase.sh
 
 # Restore the database from the backup file
-sudo docker exec supabase-db psql --host=127.0.0.1 --port=5432 --username=postgres --dbname=postgres --file="/backups/$BACKUP_FILENAME_SQL"
+sudo docker exec supabase-db psql --host=127.0.0.1 --port=5432 --username=supabase_admin --dbname=postgres --file="/backups/$BACKUP_FILENAME_SQL"
 
 # Cleanup
 rm -f $BACKUP_FILENAME_SQL

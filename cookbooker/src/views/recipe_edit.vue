@@ -70,12 +70,12 @@
       <!-- Name -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-name">Recipe Name</label>
-        <input class="custom-input" id="recipe-name" v-model="recipe.name" type="text" @input="updateRecipeName" />
+        <input class="custom-input-medium" id="recipe-name" v-model="recipe.name" type="text" @input="updateRecipeName" />
       </div>
       <!-- Category -->
       <div class="custom-input-container">
       <label class="custom-label" for="recipe-category">Category</label>
-      <select class="custom-input" id="recipe-category" v-model="recipe.category_id" @input="updateCategory">
+      <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="updateCategory">
         <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
           {{ category.name }}
         </option>

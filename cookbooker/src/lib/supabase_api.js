@@ -173,6 +173,23 @@ export async function get_ingredients_for_recipe(recipe_id) {
   }
 }
 
+export async function get_categories() {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*');
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error('Error fetching categories:', error.message);
+  }
+}
+
 /* Recipe Modification */
 
 export async function update_recipe(recipe_id, recipe) {

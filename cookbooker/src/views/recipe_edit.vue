@@ -1,67 +1,87 @@
 <style>
-  .recipe {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.recipe {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-  .custom-input-container {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-  }
+.custom-input-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
 
-  .custom-label {
-    font-size: 20px;
-    margin-top: 20px;
-    margin-bottom: 5px;
-  }
+.custom-label {
+  font-size: 20px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
 
-  .custom-input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    width: 80px;
-  }
+.custom-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 80px;
+}
 
-  .custom-input-medium {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    width: 300px;
-  }
+.custom-input-medium {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 300px;
+}
 
-  .button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 25px;
+}
 
-  .custom-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 25px;
-  }
+.custom-button,
+.cancel-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+}
 
-  .custom-button:hover {
-    background-color: #45a049;
-  }
+.custom-button:hover,
+.cancel-button:hover {
+  background-color: #45a049;
+}
 
-  .custom-textarea {
-    width: 800px;
-    height: 200px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-  }
+.cancel-button {
+  background-color: #808080;
+}
+
+.cancel-button:hover {
+  background-color: #737373;
+}
+
+.custom-textarea {
+  width: 800px;
+  height: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+header>h1 {
+  display: inline-block;
+}
+
+header span {
+  margin-left: 3px;
+  vertical-align: super;
+  font-size: smaller;
+}
 </style>
 
 <template>
@@ -74,13 +94,13 @@
       </div>
       <!-- Category -->
       <div class="custom-input-container">
-      <label class="custom-label" for="recipe-category">Category</label>
-      <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="updateCategory">
-        <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
-          {{ category.name }}
-        </option>
-      </select>
-    </div>
+        <label class="custom-label" for="recipe-category">Category</label>
+        <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="updateCategory">
+          <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
       <!-- Preamble -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-preamble">Preamble</label>
@@ -120,6 +140,7 @@
       <!-- Save -->
       <div class="button-container">
         <button class="custom-button" @click="save_recipe">Save</button>
+        <button class="cancel-button" @click="return_to_recipe">Cancel</button>
       </div>
     </div>
     <h1 v-else>⌛</h1>
@@ -150,11 +171,15 @@ export default {
   methods: {
     async save_recipe() {
       try {
-        api.update_recipe(this.recipe_id, this.recipe)
+        await api.update_recipe(this.recipe_id, this.recipe)
+        window.location.href = "/recipes/" + this.recipe_id;
       } catch (error) {
         console.error('Failed to save recipe:', error);
-        alert('Failed to save recipe.');
+        alert('Failed to save recipe: ' + error);
       }
+    },
+    return_to_recipe() {
+      window.location.href = "/recipes/" + this.recipe_id;
     },
     updateRecipeName(event) {
       this.recipe.name = event.target.value;

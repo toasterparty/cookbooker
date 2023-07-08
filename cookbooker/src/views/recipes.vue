@@ -13,7 +13,7 @@
         </li>
       </ul>
     </div>
-</div>
+  </div>
 </template>
 
 <script>
@@ -24,10 +24,10 @@ export default {
   data() {
     return {
       recipes: null
-    };
+    }
   },
   async mounted() {
     this.recipes = await api.get_all_recipes()
-  },
+  }
 }
 </script>

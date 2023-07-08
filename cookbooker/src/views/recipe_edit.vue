@@ -41,7 +41,7 @@
 
 .custom-button,
 .cancel-button {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -73,7 +73,7 @@
   font-size: 16px;
 }
 
-header>h1 {
+header > h1 {
   display: inline-block;
 }
 
@@ -90,13 +90,28 @@ header span {
       <!-- Name -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-name">Recipe Name</label>
-        <input class="custom-input-medium" id="recipe-name" v-model="recipe.name" type="text" @input="updateRecipeName" />
+        <input
+          class="custom-input-medium"
+          id="recipe-name"
+          v-model="recipe.name"
+          type="text"
+          @input="updateRecipeName"
+        />
       </div>
       <!-- Category -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-category">Category</label>
-        <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="updateCategory">
-          <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
+        <select
+          class="custom-input-medium"
+          id="recipe-category"
+          v-model="recipe.category_id"
+          @input="updateCategory"
+        >
+          <option
+            v-for="category in categories"
+            :key="category.category_id"
+            :value="category.category_id"
+          >
             {{ category.name }}
           </option>
         </select>
@@ -115,22 +130,42 @@ header span {
       <!-- Servings -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-servings">Servings</label>
-        <input class="custom-input" id="recipe-servings" v-model.number="recipe.servings" type="number" />
+        <input
+          class="custom-input"
+          id="recipe-servings"
+          v-model.number="recipe.servings"
+          type="number"
+        />
       </div>
       <!-- Calories per Serving -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-calories">Calories per Serving</label>
-        <input class="custom-input" id="recipe-calories" v-model.number="recipe.calories_per_serving" type="number" />
+        <input
+          class="custom-input"
+          id="recipe-calories"
+          v-model.number="recipe.calories_per_serving"
+          type="number"
+        />
       </div>
       <!-- Prep Time (minutes) -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-prep-time">Prep Time (minutes)</label>
-        <input class="custom-input" id="recipe-prep-time" v-model.number="recipe.prep_time_m" type="number" />
+        <input
+          class="custom-input"
+          id="recipe-prep-time"
+          v-model.number="recipe.prep_time_m"
+          type="number"
+        />
       </div>
       <!-- Cook Time (minutes) -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-cook-time">Cook Time (minutes)</label>
-        <input class="custom-input" id="recipe-cook-time" v-model.number="recipe.cook_time_m" type="number" />
+        <input
+          class="custom-input"
+          id="recipe-cook-time"
+          v-model.number="recipe.cook_time_m"
+          type="number"
+        />
       </div>
       <!-- Source -->
       <div class="custom-input-container">
@@ -158,35 +193,34 @@ export default {
       recipe: null,
       steps: null,
       ingredients: null,
-      categories: null,
-    };
+      categories: null
+    }
   },
   async created() {
-    this.recipe_id = this.$route.params.recipe_id;
-    this.recipe = await api.get_recipe(this.recipe_id);
-    this.steps = await api.get_steps_for_recipe(this.recipe_id);
-    this.ingredients = await api.get_ingredients_for_recipe(this.recipe_id);
-    this.categories = await api.get_categories();
+    this.recipe_id = this.$route.params.recipe_id
+    this.recipe = await api.get_recipe(this.recipe_id)
+    this.steps = await api.get_steps_for_recipe(this.recipe_id)
+    this.ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
+    this.categories = await api.get_categories()
   },
   methods: {
     async save_recipe() {
       try {
         await api.update_recipe(this.recipe_id, this.recipe)
-        window.location.href = "/recipes/" + this.recipe_id;
+        window.location.href = '/recipes/' + this.recipe_id
       } catch (error) {
-        console.error('Failed to save recipe:', error);
-        alert('Failed to save recipe: ' + error);
+        console.error('Failed to save recipe:', error)
+        alert('Failed to save recipe: ' + error)
       }
     },
     return_to_recipe() {
-      window.location.href = "/recipes/" + this.recipe_id;
+      window.location.href = '/recipes/' + this.recipe_id
     },
     updateRecipeName(event) {
-      this.recipe.name = event.target.value;
+      this.recipe.name = event.target.value
     },
     updateCategory(event) {
-      console.info(event.target.value)
-      this.recipe.category_id = event.target.value;
+      this.recipe.category_id = event.target.value
     },
   },
 }

@@ -15,7 +15,7 @@
       <router-link to="/recipes">Recipes</router-link>
     </div>
     <div class="hr-wrapper">
-      <hr class="custom-hr">
+      <hr class="custom-hr" />
     </div>
     <router-view />
   </div>

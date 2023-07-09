@@ -95,7 +95,7 @@ header span {
           id="recipe-name"
           v-model="recipe.name"
           type="text"
-          @input="updateRecipeName"
+          @input="update_recipe_name"
         />
       </div>
       <!-- Category -->
@@ -105,7 +105,7 @@ header span {
           class="custom-input-medium"
           id="recipe-category"
           v-model="recipe.category_id"
-          @input="updateCategory"
+          @input="update_category"
         >
           <option
             v-for="category in categories"
@@ -123,9 +123,8 @@ header span {
       </div>
       <!-- Image -->
       <div class="custom-input-container">
-        <label class="custom-label" for="recipe-image">Image</label>
-        <input class="custom-input" id="recipe-image" v-model="recipe.image" type="text" />
-        <!-- Add file upload functionality here -->
+        <label class="custom-label">Image</label>
+        <input type="file" @change="upate_image">
       </div>
       <!-- Servings -->
       <div class="custom-input-container">
@@ -193,7 +192,8 @@ export default {
       recipe: null,
       steps: null,
       ingredients: null,
-      categories: null
+      categories: null,
+      image: null
     }
   },
   async created() {
@@ -206,6 +206,15 @@ export default {
   methods: {
     async save_recipe() {
       try {
+        if (this.image) {
+          if (this.recipe.image) {
+            await api.delete_file(this.recipe.image)
+            this.recipe.image = null
+          }
+          const filename = this.recipe.recipe_id + '-' + this.image.name
+          await api.upload_file(this.image, filename)
+          this.recipe.image = filename
+        }
         await api.update_recipe(this.recipe_id, this.recipe)
         window.location.href = '/recipes/' + this.recipe_id
       } catch (error) {
@@ -216,12 +225,15 @@ export default {
     return_to_recipe() {
       window.location.href = '/recipes/' + this.recipe_id
     },
-    updateRecipeName(event) {
+    update_recipe_name(event) {
       this.recipe.name = event.target.value
     },
-    updateCategory(event) {
+    update_category(event) {
       this.recipe.category_id = event.target.value
     },
-  },
+    upate_image(event) {
+      this.image = event.target.files[0];
+    },
+  }
 }
 </script>

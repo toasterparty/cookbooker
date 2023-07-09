@@ -1,5 +1,40 @@
 import { supabase } from './supabase_client'
 
+/* General */
+
+export async function upload_file(file, filename) {
+  try {
+    const { data, error } = await supabase.storage
+      .from("recipe-images")
+      .upload(filename, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      throw error
+    }
+  
+  } catch (error) {
+    console.error('Error uploading file:', error.message)
+  }
+}
+
+export async function delete_file(filename) {
+  try {
+    const { data, error } = await supabase.storage
+      .from("recipe-images")
+      .remove([filename])
+
+    if (error) {
+      throw error
+    }
+  
+  } catch (error) {
+    console.error('Error deleting file:', error.message)
+  }
+}
+
 /* Recipe Lookup */
 
 export async function get_all_recipes() {

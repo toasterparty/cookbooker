@@ -23,7 +23,7 @@ header span {
         </span>
       </header>
       <br />
-      <p>[image]</p>
+      <img :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' + this.recipe.image">
       <br />
       <p>{{ recipe.preamble }}</p>
       <br />

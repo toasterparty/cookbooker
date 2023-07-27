@@ -22,9 +22,10 @@ header span {
           <a :href="'/edit/' + this.$route.params.recipe_id">edit</a>
         </span>
       </header>
-      <br />
-      <img :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' + this.recipe.image">
-      <br />
+      <img
+        :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' + this.recipe.image"
+        style="object-fit: contain; height: 400px; width: 400px;"
+      >
       <p>{{ recipe.preamble }}</p>
       <br />
       <h2>Ingredients</h2>

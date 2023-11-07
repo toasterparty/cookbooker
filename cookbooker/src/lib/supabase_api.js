@@ -153,7 +153,23 @@ export async function get_unit(unit_id) {
   }
 }
 
-export async function get_ingredients_for_recipe(recipe_id) {
+export async function get_units() {
+  try {
+    const { data, error } = await supabase.from('units').select('*')
+
+    if (error) {
+      throw error
+    }
+
+    data.sort((a, b) => a.unit_id - b.unit_id);
+
+    return data
+  } catch (error) {
+    console.error('Error fetching units:', error.message)
+  }
+}
+
+async function get_recipe_ingredients(recipe_id) {
   try {
     const { data, error } = await supabase
       .from('recipe_ingredient')
@@ -164,20 +180,30 @@ export async function get_ingredients_for_recipe(recipe_id) {
       throw error
     }
 
+    return data
+  } catch (error) {
+    console.error('Error fetching ingredient_ids for recipe:', error.message)
+  }
+}
+
+export async function get_ingredients_for_recipe(recipe_id) {
+  try {
+    const recipe_ingredients = await get_recipe_ingredients(recipe_id)
+
     const ingredients = []
-    for (var i = 0; i < data.length; i++) {
-      const ingredient = await get_ingredient(data[i].ingredient_id)
+    for (var i = 0; i < recipe_ingredients.length; i++) {
+      const ingredient = await get_ingredient(recipe_ingredients[i].ingredient_id)
+
       var units
-      if (data[i].unit_id == null) {
+      if (recipe_ingredients[i].unit_id === null) {
         units = null
       } else {
-        const unit = await get_unit(data[i].unit_id)
-        units = unit.name
+        units = await get_unit(recipe_ingredients[i].unit_id)
       }
 
       ingredients.push({
         name: ingredient.name,
-        quantity: data[i].quantity,
+        quantity: recipe_ingredients[i].quantity,
         units: units
       })
     }

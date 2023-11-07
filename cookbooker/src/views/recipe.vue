@@ -13,6 +13,7 @@ header span {
 }
 </style>
 
+<!-- TODO: CSS instead of br -->
 <template>
   <div class="recipe">
     <div v-if="recipe">
@@ -31,16 +32,11 @@ header span {
       <h2>Ingredients</h2>
       <br />
       <li v-for="ingredient in ingredients" :key="ingredient.name">
-        <p v-if="ingredient.units" class="ingredient">
-          {{ ingredient.quantity }} {{ ingredient.units }}s {{ ingredient.name }}
+        <p v-if="use_unit(ingredient.units)" class="ingredient">
+          {{ ingredient.quantity }} {{ ingredient.units.name }}s {{ ingredient.name }}
         </p>
         <p v-else class="ingredient">{{ ingredient.quantity }} {{ ingredient.name }}s</p>
       </li>
-      <br />
-      <!-- TODO: CSS real good -->
-      <h2>Equipment</h2>
-      <br />
-      <p>I might not do this</p>
       <br />
       <h2>Directions</h2>
       <br />
@@ -78,6 +74,12 @@ export default {
     this.recipe = await api.get_recipe(recipe_id)
     this.steps = await api.get_steps_for_recipe(recipe_id)
     this.ingredients = await api.get_ingredients_for_recipe(recipe_id)
-  }
+  },
+  methods: {
+    use_unit(unit) {
+      // don't use if it's not specified, or if it's the "Count" unit
+      return !(unit === null || unit.unit_id === 0);
+    },
+  },
 }
 </script>

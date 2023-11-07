@@ -116,15 +116,19 @@ header span {
           </option>
         </select>
       </div>
+      <!-- Image -->
+      <div class="custom-input-container">
+        <label class="custom-label">Image</label>
+        <img
+          :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' + this.recipe.image"
+          style="object-fit: contain; height: 400px; width: 400px;"
+        >
+        <input type="file" @change="update_image">
+      </div>
       <!-- Preamble -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-preamble">Preamble</label>
         <textarea class="custom-textarea" id="recipe-preamble" v-model="recipe.preamble"></textarea>
-      </div>
-      <!-- Image -->
-      <div class="custom-input-container">
-        <label class="custom-label">Image</label>
-        <input type="file" @change="upate_image">
       </div>
       <!-- Servings -->
       <div class="custom-input-container">
@@ -193,7 +197,7 @@ export default {
       steps: null,
       ingredients: null,
       categories: null,
-      image: null
+      image: null,
     }
   },
   async created() {
@@ -231,7 +235,7 @@ export default {
     update_category(event) {
       this.recipe.category_id = event.target.value
     },
-    upate_image(event) {
+    update_image(event) {
       this.image = event.target.files[0];
     },
   }

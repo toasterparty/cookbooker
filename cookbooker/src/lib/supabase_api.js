@@ -230,7 +230,7 @@ export async function get_categories() {
 
 /* Recipe Modification */
 
-export async function update_recipe(recipe_id, recipe) {
+export async function update_recipe(recipe_id, recipe, ingredients) {
   try {
     const { data, error } = await supabase
       .from('recipes')

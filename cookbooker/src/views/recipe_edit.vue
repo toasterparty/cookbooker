@@ -176,19 +176,27 @@ header span {
       <!-- Ingredients -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-cook-time">Ingredients</label>
-        <p v-for="(ingredient, ingredient_index) in recipe_ingredients" :key="ingredient_index">
+        <p v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients" :key="recipe_ingredient_index">
           <input
             class="custom-input"
             id="recipe-cook-time"
-            v-model.number="ingredient.quantity"
+            v-model.number="recipe_ingredient.quantity"
             type="number"
           />
           <select
-            v-model="selected_units[ingredient_index]"
-            @change="update_units(ingredient_index)"
+            v-model="selected_units[recipe_ingredient_index]"
+            @change="update_recipe_ingredient_units(recipe_ingredient_index)"
           >
             <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
               {{ unit.name }}
+            </option>
+          </select>
+          <select
+            v-model="selected_ingredients[recipe_ingredient_index]"
+            @change="update_recipe_ingredient_ingredient(recipe_ingredient_index)"
+          >
+            <option v-for="(ingredient, ingredient_index) in ingredients" :key="ingredient_index" :value="ingredient_index">
+              {{ ingredient.name }}
             </option>
           </select>
         </p>
@@ -223,7 +231,9 @@ export default {
       categories: null,
       image: null,
       units: null,
-      selected_units: []
+      selected_units: [],
+      ingredients: null,
+      selected_ingredients: []
     }
   },
   async created() {
@@ -233,19 +243,28 @@ export default {
     this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
     this.categories = await api.get_categories()
     this.units = await api.get_units()
+    this.ingredients = await api.get_ingredients()
 
-    for (const ingredient of this.recipe_ingredients) {
-      var unit_index
-      if (ingredient.units === null) {
-        unit_index = 0 // "Count"
-      } else {
-        unit_index = this.units.findIndex((unit) => unit.unit_id === ingredient.units.unit_id)
-        if (unit_index === -1) {
-          unit_index = 0 // "Count"
+    for (const recipe_ingredient of this.recipe_ingredients) {
+      /* Find and record which unit is selected for each recipe ingredient */
+      var index = 0 // "Count"
+      if (recipe_ingredient.units !== null) {
+        index = this.units.findIndex((unit) => unit.unit_id === recipe_ingredient.units.unit_id)
+        if (index === -1) {
+          index = 0 // "Count"
         }
       }
+      this.selected_units.push(index)
 
-      this.selected_units.push(unit_index)
+      /* Find and record which ingredient is selected for each recipe ingredient */
+      index = null
+      if (recipe_ingredient.ingredient_id !== null) {
+        index = this.ingredients.findIndex((ingredient) => ingredient.ingredient_id === recipe_ingredient.ingredient_id)
+        if (index === -1) {
+          index = null
+        }
+      }
+      this.selected_ingredients.push(index)
     }
   },
   methods: {
@@ -294,11 +313,13 @@ export default {
     update_image(event) {
       this.image = event.target.files[0]
     },
-    update_units(ingredient_index) {
-      var unit_index = this.selected_units[ingredient_index]
-      this.recipe_ingredients[ingredient_index].units = this.units[unit_index]
-      // var unit_id = this.recipe_ingredients[ingredient_index].units.unit_id
-      // console.log(ingredient_index + " - Selected unit: " + unit_id)
+    update_recipe_ingredient_units(recipe_ingredient_index) {
+      var unit_index = this.selected_units[recipe_ingredient_index]
+      this.recipe_ingredients[recipe_ingredient_index].units = this.units[unit_index]
+    },
+    update_recipe_ingredient_ingredient(recipe_ingredient_index) {
+      var ingredient_index = this.selected_ingredients[recipe_ingredient_index]
+      this.recipe_ingredients[recipe_ingredient_index].ingredient_id = this.ingredients[ingredient_index].ingredient_id
     }
   }
 }

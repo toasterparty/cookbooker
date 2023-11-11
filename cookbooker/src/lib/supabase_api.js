@@ -180,6 +180,20 @@ async function get_recipe_ingredients(recipe_id) {
   }
 }
 
+export async function get_ingredients() {
+  try {
+    const { data, error } = await supabase.from('ingredients').select('*')
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error fetching ingredients:', error.message)
+  }
+}
+
 export async function get_ingredients_for_recipe(recipe_id) {
   try {
     const recipe_ingredients = await get_recipe_ingredients(recipe_id)
@@ -205,7 +219,7 @@ export async function get_ingredients_for_recipe(recipe_id) {
 
     return ingredients
   } catch (error) {
-    console.error('Error fetching ingredients:', error.message)
+    console.error('Error fetching ingredients for recipe:', error.message)
   }
 }
 

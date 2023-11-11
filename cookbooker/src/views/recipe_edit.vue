@@ -180,6 +180,11 @@ header span {
             v-model.number="ingredient.quantity"
             type="number"
           />
+          <select v-model="selected_units[ingredient_index]" @change="update_units(ingredient_index)">
+            <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
+              {{ unit.name }}
+            </option>
+          </select>
         </p>
       </div>
       <br />
@@ -211,6 +216,8 @@ export default {
       ingredients: null,
       categories: null,
       image: null,
+      units: null,
+      selected_units: []
     }
   },
   async created() {
@@ -219,6 +226,21 @@ export default {
     this.steps = await api.get_steps_for_recipe(this.recipe_id)
     this.ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
     this.categories = await api.get_categories()
+    this.units = await api.get_units()
+
+    for (const ingredient of this.ingredients) {
+      var unit_index
+      if (ingredient.units === null) {
+        unit_index = 0 // "Count"
+      } else {
+        unit_index = this.units.findIndex(unit => unit.unit_id === ingredient.units.unit_id);
+        if (unit_index === -1) {
+          unit_index = 0 // "Count"
+        }
+      }
+
+      this.selected_units.push(unit_index);
+    }
   },
   methods: {
     async save_recipe() {
@@ -267,6 +289,12 @@ export default {
     },
     update_image(event) {
       this.image = event.target.files[0];
+    },
+    update_units(ingredient_index) {
+      var unit_index = this.selected_units[ingredient_index]
+      this.ingredients[ingredient_index].units = this.units[unit_index]
+      // var unit_id = this.ingredients[ingredient_index].units.unit_id
+      // console.log(ingredient_index + " - Selected unit: " + unit_id)
     },
   }
 }

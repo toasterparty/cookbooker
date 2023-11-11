@@ -170,6 +170,19 @@ header span {
           type="number"
         />
       </div>
+      <!-- Ingredients -->
+      <div class="custom-input-container">
+        <label class="custom-label" for="recipe-cook-time">Ingredients</label>
+        <p v-for="(ingredient, ingredient_index) in ingredients" :key="ingredient_index">
+          <input
+            class="custom-input"
+            id="recipe-cook-time"
+            v-model.number="ingredient.quantity"
+            type="number"
+          />
+        </p>
+      </div>
+      <br />
       <!-- Source -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-source">Source</label>
@@ -201,7 +214,7 @@ export default {
     }
   },
   async created() {
-    this.recipe_id = this.$route.params.recipe_id
+    this.recipe_id = parseInt(this.$route.params.recipe_id)
     this.recipe = await api.get_recipe(this.recipe_id)
     this.steps = await api.get_steps_for_recipe(this.recipe_id)
     this.ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
@@ -220,11 +233,28 @@ export default {
           this.recipe.image = filename
         }
         await api.update_recipe(this.recipe_id, this.recipe)
-        window.location.href = '/recipes/' + this.recipe_id
+        await api.update_recipe_ingredients(this.recipe_id, this.recipe_ingredients())
+        // this.return_to_recipe()
       } catch (error) {
         console.error('Failed to save recipe:', error)
         alert('Failed to save recipe: ' + error)
       }
+    },
+    recipe_ingredients() {
+      var recipe_ingredients = []
+      for (const ingredient of this.ingredients) {
+        recipe_ingredients.push(
+          {
+            recipe_id: this.recipe_id,
+            ingredient_id: ingredient.ingredient_id,
+            quantity: ingredient.quantity,
+            unit_id: ingredient.units.unit_id,
+            // optional: false
+          }
+        )
+      }
+
+      return recipe_ingredients
     },
     return_to_recipe() {
       window.location.href = '/recipes/' + this.recipe_id

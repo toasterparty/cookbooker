@@ -14,7 +14,7 @@ export async function upload_file(file, filename) {
     if (error) {
       throw error
     }
-  
+
   } catch (error) {
     console.error('Error uploading file:', error.message)
   }
@@ -29,7 +29,7 @@ export async function delete_file(filename) {
     if (error) {
       throw error
     }
-  
+
   } catch (error) {
     console.error('Error deleting file:', error.message)
   }
@@ -203,6 +203,7 @@ export async function get_ingredients_for_recipe(recipe_id) {
 
       ingredients.push({
         name: ingredient.name,
+        ingredient_id: recipe_ingredients[i].ingredient_id,
         quantity: recipe_ingredients[i].quantity,
         units: units
       })
@@ -230,7 +231,7 @@ export async function get_categories() {
 
 /* Recipe Modification */
 
-export async function update_recipe(recipe_id, recipe, ingredients) {
+export async function update_recipe(recipe_id, recipe) {
   try {
     const { data, error } = await supabase
       .from('recipes')
@@ -253,6 +254,61 @@ export async function update_recipe(recipe_id, recipe, ingredients) {
 
     return data
   } catch (error) {
-    throw error
+    console.error('Error updating recipe:', error.message)
   }
+}
+
+async function drop_recipe_ingredients(recipe_id) {
+  try {
+    const { data, error } = await supabase
+      .from('recipe_ingredient')
+      .delete()
+      .eq('recipe_id', recipe_id);
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from recipe_ingredient:', error.message);
+  }
+}
+
+async function add_recipe_ingredients(ingredients) {
+  try {
+    const { data, error } = await supabase
+      .from('recipe_ingredient')
+      .insert(ingredients)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when adding to recipe_ingredient:', error.message);
+  }
+}
+export async function update_recipe_ingredients(recipe_id, ingredients) {
+
+  /* Validate input */
+
+  if (ingredients == null) {
+    throw new Error("ingredients is null")
+  }
+
+  console.log(ingredients)
+
+  for (const ingredient of ingredients) {
+    if (ingredient == null || ingredient.ingredient_id == null || ingredient.quantity == null || ingredient.unit_id == null) {
+      throw new Error(`invalid ingredient: ${JSON.stringify(ingredient)}`)
+    }
+  }
+
+  /* Delete existing recipe ingredients */
+  await drop_recipe_ingredients(recipe_id)
+
+  /* Add new recipe ingredients */
+  await add_recipe_ingredients(ingredients)
 }

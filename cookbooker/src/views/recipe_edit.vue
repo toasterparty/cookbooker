@@ -176,7 +176,7 @@ header span {
       <!-- Ingredients -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-cook-time">Ingredients</label>
-        <p v-for="(ingredient, ingredient_index) in ingredients" :key="ingredient_index">
+        <p v-for="(ingredient, ingredient_index) in recipe_ingredients" :key="ingredient_index">
           <input
             class="custom-input"
             id="recipe-cook-time"
@@ -219,7 +219,7 @@ export default {
       recipe_id: null,
       recipe: null,
       steps: null,
-      ingredients: null,
+      recipe_ingredients: null,
       categories: null,
       image: null,
       units: null,
@@ -230,11 +230,11 @@ export default {
     this.recipe_id = parseInt(this.$route.params.recipe_id)
     this.recipe = await api.get_recipe(this.recipe_id)
     this.steps = await api.get_steps_for_recipe(this.recipe_id)
-    this.ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
+    this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
     this.categories = await api.get_categories()
     this.units = await api.get_units()
 
-    for (const ingredient of this.ingredients) {
+    for (const ingredient of this.recipe_ingredients) {
       var unit_index
       if (ingredient.units === null) {
         unit_index = 0 // "Count"
@@ -261,17 +261,17 @@ export default {
           this.recipe.image = filename
         }
         await api.update_recipe(this.recipe_id, this.recipe)
-        await api.update_recipe_ingredients(this.recipe_id, this.recipe_ingredients())
+        await api.update_recipe_ingredients(this.recipe_id, this.db_recipe_ingredients())
         // this.return_to_recipe()
       } catch (error) {
         console.error('Failed to save recipe:', error)
         alert('Failed to save recipe: ' + error)
       }
     },
-    recipe_ingredients() {
-      var recipe_ingredients = []
-      for (const ingredient of this.ingredients) {
-        recipe_ingredients.push({
+    db_recipe_ingredients() {
+      var db_recipe_ingredients = []
+      for (const ingredient of this.recipe_ingredients) {
+        db_recipe_ingredients.push({
           recipe_id: this.recipe_id,
           ingredient_id: ingredient.ingredient_id,
           quantity: ingredient.quantity,
@@ -280,7 +280,7 @@ export default {
         })
       }
 
-      return recipe_ingredients
+      return db_recipe_ingredients
     },
     return_to_recipe() {
       window.location.href = '/recipes/' + this.recipe_id
@@ -296,8 +296,8 @@ export default {
     },
     update_units(ingredient_index) {
       var unit_index = this.selected_units[ingredient_index]
-      this.ingredients[ingredient_index].units = this.units[unit_index]
-      // var unit_id = this.ingredients[ingredient_index].units.unit_id
+      this.recipe_ingredients[ingredient_index].units = this.units[unit_index]
+      // var unit_id = this.recipe_ingredients[ingredient_index].units.unit_id
       // console.log(ingredient_index + " - Selected unit: " + unit_id)
     }
   }

@@ -4,17 +4,14 @@ import { supabase } from './supabase_client'
 
 export async function upload_file(file, filename) {
   try {
-    const { data, error } = await supabase.storage
-      .from("recipe-images")
-      .upload(filename, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+    const { data, error } = await supabase.storage.from('recipe-images').upload(filename, file, {
+      cacheControl: '3600',
+      upsert: false
+    })
 
     if (error) {
       throw error
     }
-
   } catch (error) {
     console.error('Error uploading file:', error.message)
   }
@@ -22,14 +19,11 @@ export async function upload_file(file, filename) {
 
 export async function delete_file(filename) {
   try {
-    const { data, error } = await supabase.storage
-      .from("recipe-images")
-      .remove([filename])
+    const { data, error } = await supabase.storage.from('recipe-images').remove([filename])
 
     if (error) {
       throw error
     }
-
   } catch (error) {
     console.error('Error deleting file:', error.message)
   }
@@ -161,7 +155,7 @@ export async function get_units() {
       throw error
     }
 
-    data.sort((a, b) => a.unit_id - b.unit_id);
+    data.sort((a, b) => a.unit_id - b.unit_id)
 
     return data
   } catch (error) {
@@ -263,7 +257,7 @@ async function drop_recipe_ingredients(recipe_id) {
     const { data, error } = await supabase
       .from('recipe_ingredient')
       .delete()
-      .eq('recipe_id', recipe_id);
+      .eq('recipe_id', recipe_id)
 
     if (error) {
       throw error
@@ -271,15 +265,13 @@ async function drop_recipe_ingredients(recipe_id) {
 
     return data
   } catch (error) {
-    console.error('Error when deleting from recipe_ingredient:', error.message);
+    console.error('Error when deleting from recipe_ingredient:', error.message)
   }
 }
 
 async function add_recipe_ingredients(ingredients) {
   try {
-    const { data, error } = await supabase
-      .from('recipe_ingredient')
-      .insert(ingredients)
+    const { data, error } = await supabase.from('recipe_ingredient').insert(ingredients)
 
     if (error) {
       throw error
@@ -287,21 +279,25 @@ async function add_recipe_ingredients(ingredients) {
 
     return data
   } catch (error) {
-    console.error('Error when adding to recipe_ingredient:', error.message);
+    console.error('Error when adding to recipe_ingredient:', error.message)
   }
 }
 export async function update_recipe_ingredients(recipe_id, ingredients) {
-
   /* Validate input */
 
   if (ingredients == null) {
-    throw new Error("ingredients is null")
+    throw new Error('ingredients is null')
   }
 
   console.log(ingredients)
 
   for (const ingredient of ingredients) {
-    if (ingredient == null || ingredient.ingredient_id == null || ingredient.quantity == null || ingredient.unit_id == null) {
+    if (
+      ingredient == null ||
+      ingredient.ingredient_id == null ||
+      ingredient.quantity == null ||
+      ingredient.unit_id == null
+    ) {
       throw new Error(`invalid ingredient: ${JSON.stringify(ingredient)}`)
     }
   }

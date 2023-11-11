@@ -24,9 +24,12 @@ header span {
         </span>
       </header>
       <img
-        :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' + this.recipe.image"
-        style="object-fit: contain; height: 400px; width: 400px;"
-      >
+        :src="
+          'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
+          this.recipe.image
+        "
+        style="object-fit: contain; height: 400px; width: 400px"
+      />
       <p>{{ recipe.preamble }}</p>
       <br />
       <h2>Ingredients</h2>
@@ -78,8 +81,8 @@ export default {
   methods: {
     use_unit(unit) {
       // don't use if it's not specified, or if it's the "Count" unit
-      return !(unit === null || unit.unit_id === 0);
-    },
-  },
+      return !(unit === null || unit.unit_id === 0)
+    }
+  }
 }
 </script>

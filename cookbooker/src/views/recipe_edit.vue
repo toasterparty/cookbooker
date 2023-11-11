@@ -120,10 +120,13 @@ header span {
       <div class="custom-input-container">
         <label class="custom-label">Image</label>
         <img
-          :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' + this.recipe.image"
-          style="object-fit: contain; height: 400px; width: 400px;"
-        >
-        <input type="file" @change="update_image">
+          :src="
+            'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
+            this.recipe.image
+          "
+          style="object-fit: contain; height: 400px; width: 400px"
+        />
+        <input type="file" @change="update_image" />
       </div>
       <!-- Preamble -->
       <div class="custom-input-container">
@@ -180,7 +183,10 @@ header span {
             v-model.number="ingredient.quantity"
             type="number"
           />
-          <select v-model="selected_units[ingredient_index]" @change="update_units(ingredient_index)">
+          <select
+            v-model="selected_units[ingredient_index]"
+            @change="update_units(ingredient_index)"
+          >
             <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
               {{ unit.name }}
             </option>
@@ -233,13 +239,13 @@ export default {
       if (ingredient.units === null) {
         unit_index = 0 // "Count"
       } else {
-        unit_index = this.units.findIndex(unit => unit.unit_id === ingredient.units.unit_id);
+        unit_index = this.units.findIndex((unit) => unit.unit_id === ingredient.units.unit_id)
         if (unit_index === -1) {
           unit_index = 0 // "Count"
         }
       }
 
-      this.selected_units.push(unit_index);
+      this.selected_units.push(unit_index)
     }
   },
   methods: {
@@ -265,15 +271,13 @@ export default {
     recipe_ingredients() {
       var recipe_ingredients = []
       for (const ingredient of this.ingredients) {
-        recipe_ingredients.push(
-          {
-            recipe_id: this.recipe_id,
-            ingredient_id: ingredient.ingredient_id,
-            quantity: ingredient.quantity,
-            unit_id: ingredient.units.unit_id,
-            // optional: false
-          }
-        )
+        recipe_ingredients.push({
+          recipe_id: this.recipe_id,
+          ingredient_id: ingredient.ingredient_id,
+          quantity: ingredient.quantity,
+          unit_id: ingredient.units.unit_id
+          // optional: false
+        })
       }
 
       return recipe_ingredients
@@ -288,14 +292,14 @@ export default {
       this.recipe.category_id = event.target.value
     },
     update_image(event) {
-      this.image = event.target.files[0];
+      this.image = event.target.files[0]
     },
     update_units(ingredient_index) {
       var unit_index = this.selected_units[ingredient_index]
       this.ingredients[ingredient_index].units = this.units[unit_index]
       // var unit_id = this.ingredients[ingredient_index].units.unit_id
       // console.log(ingredient_index + " - Selected unit: " + unit_id)
-    },
+    }
   }
 }
 </script>

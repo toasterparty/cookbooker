@@ -51,6 +51,10 @@
   margin-right: 10px;
 }
 
+.add-button {
+  width: 75px;
+}
+
 .custom-button:hover,
 .cancel-button:hover {
   background-color: #45a049;
@@ -227,9 +231,9 @@ header span {
             </option>
             <option value="new">Add New...</option>
           </select>
-          <!-- Modal for adding custom ingredient -->
         </p>
 
+        <!-- Modal for adding custom ingredient -->
         <div v-if="show_new_ingredient_modal">
           <div class="modal-overlay" @click="hide_new_ingredient_modal"></div>
           <div class="modal">
@@ -241,7 +245,12 @@ header span {
             <button @click="hide_new_ingredient_modal">Cancel</button>
           </div>
         </div>
+        <!-- Add ingredient to the recipe -->
+        <div class="custom-input-container">
+          <button class="add-button" @click="add_ingredient_row">...</button>
+        </div>
       </div>
+
       <br />
       <!-- Source -->
       <div class="custom-input-container">
@@ -286,15 +295,15 @@ export default {
     this.steps = await api.get_steps_for_recipe(this.recipe_id)
     this.categories = await api.get_categories()
     this.units = await api.get_units()
+    this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
 
     await this.refresh_ingredients()
   },
   methods: {
     async refresh_ingredients() {
-      this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
       this.ingredients = await api.get_ingredients()
-      this.selected_ingredients = []
       this.selected_units = []
+      this.selected_ingredients = []
 
       for (const recipe_ingredient of this.recipe_ingredients) {
         /* Find and record which unit is selected for each recipe ingredient */
@@ -319,7 +328,6 @@ export default {
         }
         this.selected_ingredients.push(index)
       }
-      this.selected_ingredients.push(null) // add new
     },
     async save_recipe() {
       try {
@@ -382,6 +390,8 @@ export default {
         this.ingredients[ingredient_index].ingredient_id
     },
     async add_new_ingredient() {
+      // TODO: check for duplicate
+
       await api.add_ingredient({ name: this.new_ingredient })
       await this.refresh_ingredients()
 
@@ -404,6 +414,12 @@ export default {
       this.show_new_ingredient_modal = false
       this.new_ingredient = null
       this.new_recipe_ingredient_index = null
+    },
+    add_ingredient_row() {
+      this.recipe_ingredients.push({
+        ...this.recipe_ingredients[this.recipe_ingredients.length - 1]
+      })
+      this.refresh_ingredients()
     }
   }
 }

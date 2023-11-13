@@ -319,8 +319,6 @@ export async function update_recipe_ingredients(recipe_id, ingredients) {
     throw new Error('ingredients is null')
   }
 
-  console.log(ingredients)
-
   for (const ingredient of ingredients) {
     if (
       ingredient == null ||

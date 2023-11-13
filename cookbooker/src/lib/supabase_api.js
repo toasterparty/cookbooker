@@ -237,6 +237,22 @@ export async function get_categories() {
   }
 }
 
+/* Ingredient Modification */
+
+export async function add_ingredient(ingredient) {
+  try {
+    const { data, error } = await supabase.from('ingredients').insert([ingredient])
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error adding new ingredient:', error.message)
+  }
+}
+
 /* Recipe Modification */
 
 export async function update_recipe(recipe_id, recipe) {

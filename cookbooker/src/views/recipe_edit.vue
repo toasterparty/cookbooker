@@ -73,6 +73,26 @@
   font-size: 16px;
 }
 
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
 header > h1 {
   display: inline-block;
 }
@@ -176,7 +196,10 @@ header span {
       <!-- Ingredients -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-cook-time">Ingredients</label>
-        <p v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients" :key="recipe_ingredient_index">
+        <p
+          v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients"
+          :key="recipe_ingredient_index"
+        >
           <input
             class="custom-input"
             id="recipe-cook-time"
@@ -195,11 +218,29 @@ header span {
             v-model="selected_ingredients[recipe_ingredient_index]"
             @change="update_recipe_ingredient_ingredient(recipe_ingredient_index)"
           >
-            <option v-for="(ingredient, ingredient_index) in ingredients" :key="ingredient_index" :value="ingredient_index">
+            <option
+              v-for="(ingredient, ingredient_index) in ingredients"
+              :key="ingredient_index"
+              :value="ingredient_index"
+            >
               {{ ingredient.name }}
             </option>
+            <option value="new">Add New...</option>
           </select>
+          <!-- Modal for adding custom ingredient -->
         </p>
+
+        <div v-if="show_new_ingredient_modal">
+          <div class="modal-overlay" @click="hide_new_ingredient_modal"></div>
+          <div class="modal">
+            <label for="new_ingredient">Enter New Ingredient</label>
+            <br />
+            <input type="text" id="new_ingredient" v-model="new_ingredient" />
+            <br />
+            <button @click="add_new_ingredient">Add</button>
+            <button @click="hide_new_ingredient_modal">Cancel</button>
+          </div>
+        </div>
       </div>
       <br />
       <!-- Source -->
@@ -233,41 +274,53 @@ export default {
       units: null,
       selected_units: [],
       ingredients: null,
-      selected_ingredients: []
+      selected_ingredients: [],
+      show_new_ingredient_modal: false,
+      new_ingredient: null,
+      new_ingredient_index: null
     }
   },
   async created() {
     this.recipe_id = parseInt(this.$route.params.recipe_id)
     this.recipe = await api.get_recipe(this.recipe_id)
     this.steps = await api.get_steps_for_recipe(this.recipe_id)
-    this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
     this.categories = await api.get_categories()
     this.units = await api.get_units()
-    this.ingredients = await api.get_ingredients()
 
-    for (const recipe_ingredient of this.recipe_ingredients) {
-      /* Find and record which unit is selected for each recipe ingredient */
-      var index = 0 // "Count"
-      if (recipe_ingredient.units !== null) {
-        index = this.units.findIndex((unit) => unit.unit_id === recipe_ingredient.units.unit_id)
-        if (index === -1) {
-          index = 0 // "Count"
-        }
-      }
-      this.selected_units.push(index)
-
-      /* Find and record which ingredient is selected for each recipe ingredient */
-      index = null
-      if (recipe_ingredient.ingredient_id !== null) {
-        index = this.ingredients.findIndex((ingredient) => ingredient.ingredient_id === recipe_ingredient.ingredient_id)
-        if (index === -1) {
-          index = null
-        }
-      }
-      this.selected_ingredients.push(index)
-    }
+    await this.refresh_ingredients()
   },
   methods: {
+    async refresh_ingredients() {
+      this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
+      this.ingredients = await api.get_ingredients()
+      this.selected_ingredients = []
+      this.selected_units = []
+
+      for (const recipe_ingredient of this.recipe_ingredients) {
+        /* Find and record which unit is selected for each recipe ingredient */
+        var index = 0 // "Count"
+        if (recipe_ingredient.units !== null) {
+          index = this.units.findIndex((unit) => unit.unit_id === recipe_ingredient.units.unit_id)
+          if (index === -1) {
+            index = 0 // "Count"
+          }
+        }
+        this.selected_units.push(index)
+
+        /* Find and record which ingredient is selected for each recipe ingredient */
+        index = null
+        if (recipe_ingredient.ingredient_id !== null) {
+          index = this.ingredients.findIndex(
+            (ingredient) => ingredient.ingredient_id === recipe_ingredient.ingredient_id
+          )
+          if (index === -1) {
+            index = null
+          }
+        }
+        this.selected_ingredients.push(index)
+      }
+      this.selected_ingredients.push(null) // add new
+    },
     async save_recipe() {
       try {
         if (this.image) {
@@ -318,8 +371,39 @@ export default {
       this.recipe_ingredients[recipe_ingredient_index].units = this.units[unit_index]
     },
     update_recipe_ingredient_ingredient(recipe_ingredient_index) {
+      if (this.selected_ingredients[recipe_ingredient_index] === 'new') {
+        this.show_new_ingredient_modal = true
+        this.new_recipe_ingredient_index = recipe_ingredient_index
+        return
+      }
+
       var ingredient_index = this.selected_ingredients[recipe_ingredient_index]
-      this.recipe_ingredients[recipe_ingredient_index].ingredient_id = this.ingredients[ingredient_index].ingredient_id
+      this.recipe_ingredients[recipe_ingredient_index].ingredient_id =
+        this.ingredients[ingredient_index].ingredient_id
+    },
+    async add_new_ingredient() {
+      await api.add_ingredient({ name: this.new_ingredient })
+      await this.refresh_ingredients()
+
+      if (this.new_recipe_ingredient_index !== null) {
+        var ingredient_index = this.ingredients.findIndex(
+          (ingredient) => ingredient.name === this.new_ingredient
+        )
+        if (ingredient_index === -1) {
+          throw new Error("Couldn't find " + this.new_ingredient + ' in database')
+        }
+
+        this.selected_ingredients[this.new_recipe_ingredient_index] = ingredient_index
+        var ingredient_id = this.ingredients[ingredient_index].ingredient_id
+        this.recipe_ingredients[this.new_recipe_ingredient_index].ingredient_id = ingredient_id
+      }
+
+      this.hide_new_ingredient_modal()
+    },
+    hide_new_ingredient_modal() {
+      this.show_new_ingredient_modal = false
+      this.new_ingredient = null
+      this.new_recipe_ingredient_index = null
     }
   }
 }

@@ -55,6 +55,10 @@
   width: 75px;
 }
 
+.remove-button {
+  width: 25px;
+}
+
 .custom-button:hover,
 .cancel-button:hover {
   background-color: #45a049;
@@ -204,6 +208,9 @@ header span {
           v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients"
           :key="recipe_ingredient_index"
         >
+          <button class="remove-button" @click="remove_ingredient_row(recipe_ingredient_index)">
+            x
+          </button>
           <input
             class="custom-input"
             id="recipe-cook-time"
@@ -245,6 +252,7 @@ header span {
             <button @click="hide_new_ingredient_modal">Cancel</button>
           </div>
         </div>
+
         <!-- Add ingredient to the recipe -->
         <div class="custom-input-container">
           <button class="add-button" @click="add_ingredient_row">...</button>
@@ -419,6 +427,10 @@ export default {
       this.recipe_ingredients.push({
         ...this.recipe_ingredients[this.recipe_ingredients.length - 1]
       })
+      this.refresh_ingredients()
+    },
+    remove_ingredient_row(recipe_ingredient_index) {
+      this.recipe_ingredients.splice(recipe_ingredient_index, 1)
       this.refresh_ingredients()
     }
   }

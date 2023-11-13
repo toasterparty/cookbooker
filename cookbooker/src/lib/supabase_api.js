@@ -312,6 +312,7 @@ async function add_recipe_ingredients(ingredients) {
     console.error('Error when adding to recipe_ingredient:', error.message)
   }
 }
+
 export async function update_recipe_ingredients(recipe_id, ingredients) {
   /* Validate input */
 

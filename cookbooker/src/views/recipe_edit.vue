@@ -264,6 +264,9 @@ header span {
       <ol>
         <li v-for="(step, step_index) in steps" :key="step.step_num">
           <p>
+            <button class="add-button" @click="remove_step(step_index)">
+            Remove Step
+            </button>
             <select
               v-model="selected_step_types[step_index]"
               @change="update_step_type(step_index)"
@@ -562,7 +565,12 @@ export default {
       this.steps.push(new_step)
       this.selected_step_types.push(0)
       this.duration_checkboxes.push(new_step.duration_m !== null)
-    }
+    },
+    remove_step(step_index) {
+      this.steps.splice(step_index, 1)
+      this.selected_step_types.splice(step_index, 1)
+      this.duration_checkboxes.splice(step_index, 1)
+    },
   }
 }
 </script>

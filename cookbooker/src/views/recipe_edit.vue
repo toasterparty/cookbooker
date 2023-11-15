@@ -423,7 +423,7 @@ export default {
         await api.update_recipe_steps(this.recipe_id, this.db_recipe_steps())
         await api.update_steps(this.db_steps())
 
-        // this.return_to_recipe()
+        this.return_to_recipe()
       } catch (error) {
         console.error('Failed to save recipe:', error)
         alert('Failed to save recipe: ' + error)

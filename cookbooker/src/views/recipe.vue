@@ -47,7 +47,7 @@ header span {
         <li v-for="step in steps" :key="step.step_num">
           <p>
             <span style="font-weight: bold">[{{ step.step_type }}] </span>
-            <span v-if="step.duration_m" style="font-weight: bold"
+            <span v-if="step.duration_m !== null && step.duration_m !== 0" style="font-weight: bold"
               >[{{ step.duration_m }}min]
             </span>
             <span>{{ step.description }}</span>

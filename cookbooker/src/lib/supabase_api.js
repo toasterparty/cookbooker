@@ -103,6 +103,7 @@ export async function get_steps_for_recipe(recipe_id) {
       const step_type = await get_step_type(step.step_type_id)
       steps.push({
         step_id: data[i].step_id,
+        step_type: step_type.name,
         step_type_id: step.step_type_id,
         step_num: data[i].step_num,
         description: step.description,

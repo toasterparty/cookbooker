@@ -426,6 +426,7 @@ async function update_step(step) {
         }
       ])
       .eq('step_id', step.step_id)
+      .single()
 
     if (error) {
       throw error
@@ -449,24 +450,21 @@ export async function update_steps(steps) {
 
 export async function new_step() {
   try {
-    var new_row
-    await supabase
+    const { data, error } = await supabase
       .from('steps')
       .insert([{}])
-      .then((response) => {
-        if (response.error) {
-          throw response.error
-        }
+      .select()
 
-        new_row = response.data[0]
-      })
-
-    var id = new_row.step_id
-    if (id === null || id === -1) {
-      throw new Error('id of new step was invalid')
+    if (error) {
+      throw error
     }
 
-    return id
+    var step_id = data[0].step_id
+    if (step_id === null || step_id === -1) {
+      throw new Error('step_id of new step was invalid')
+    }
+
+    return step_id
   } catch (error) {
     console.error('Error adding new step:', error.message)
   }

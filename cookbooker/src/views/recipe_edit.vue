@@ -295,6 +295,8 @@ header span {
               type="number"
             />
 
+            <br />
+
             <textarea
               class="custom-textarea"
               id="recipe-preamble"
@@ -304,6 +306,11 @@ header span {
           <br />
         </li>
       </ol>
+
+      <!-- Add step to directions -->
+      <div class="custom-input-container">
+        <button class="add-button" @click="add_step">Add Step</button>
+      </div>
 
       <br />
       <!-- Source -->
@@ -533,19 +540,19 @@ export default {
         this.steps[step_index].duration_m = null
       }
     },
-    add_new_step() {
-      var step_id = api.new_step()
+    async add_step() {
+      var step_id = await api.new_step()
 
       var max = 0
-      for (step of this.steps) {
+      for (const step of this.steps) {
         if (step.step_num > max) {
           max = step.step_num
         }
       }
 
-      new_step = {
+      const new_step = {
         step_id: step_id,
-        step_type_id: 0,
+        step_type_id: this.step_types[0].step_type_id,
         step_num: max + 1,
         description: '',
         duration_m: null,
@@ -553,6 +560,8 @@ export default {
       }
 
       this.steps.push(new_step)
+      this.selected_step_types.push(0)
+      this.duration_checkboxes.push(new_step.duration_m !== null)
     }
   }
 }

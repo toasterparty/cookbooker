@@ -74,7 +74,7 @@
 
 .custom-textarea {
   width: 800px;
-  height: 200px;
+  height: 180px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -259,6 +259,52 @@ header span {
         </div>
       </div>
 
+      <!-- Steps -->
+      <label class="custom-label" for="recipe-cook-time">Directions</label>
+      <ol>
+        <li v-for="(step, step_index) in steps" :key="step.step_num">
+          <p>
+            <select
+              v-model="selected_step_types[step_index]"
+              @change="update_step_type(step_index)"
+            >
+              <option
+                v-for="(step_type, step_type_index) in step_types"
+                :key="step_type_index"
+                :value="step_type_index"
+              >
+                {{ step_type.name }}
+              </option>
+            </select>
+
+            <br />
+
+            <label>
+              <input
+                type="checkbox"
+                v-model="duration_checkboxes[step_index]"
+                @change="update_duration_checkbox(step_index)"
+              />
+              Duration (min):
+            </label>
+
+            <input
+              v-if="step.duration_m !== null"
+              class="custom-input"
+              v-model.number="step.duration_m"
+              type="number"
+            />
+
+            <textarea
+              class="custom-textarea"
+              id="recipe-preamble"
+              v-model="step.description"
+            ></textarea>
+          </p>
+          <br />
+        </li>
+      </ol>
+
       <br />
       <!-- Source -->
       <div class="custom-input-container">
@@ -289,12 +335,15 @@ export default {
       categories: null,
       image: null,
       units: null,
+      step_types: null,
       selected_units: [],
       ingredients: null,
       selected_ingredients: [],
       show_new_ingredient_modal: false,
       new_ingredient: null,
-      new_ingredient_index: null
+      new_ingredient_index: null,
+      selected_step_types: [],
+      duration_checkboxes: []
     }
   },
   async created() {
@@ -303,11 +352,22 @@ export default {
     this.steps = await api.get_steps_for_recipe(this.recipe_id)
     this.categories = await api.get_categories()
     this.units = await api.get_units()
+    this.step_types = await api.get_step_types()
     this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
 
+    this.refresh_step_types()
     await this.refresh_ingredients()
   },
   methods: {
+    refresh_step_types() {
+      for (const step of this.steps) {
+        var index = this.step_types.findIndex(
+          (step_type) => step_type.step_type_id === step.step_type_id
+        )
+        this.selected_step_types.push(index)
+        this.duration_checkboxes.push(step.duration_m !== null)
+      }
+    },
     async refresh_ingredients() {
       this.ingredients = await api.get_ingredients()
       this.selected_units = []
@@ -350,6 +410,9 @@ export default {
         }
         await api.update_recipe(this.recipe_id, this.recipe)
         await api.update_recipe_ingredients(this.recipe_id, this.db_recipe_ingredients())
+        await api.update_recipe_steps(this.recipe_id, this.db_recipe_steps())
+        await api.update_steps(this.db_steps())
+
         // this.return_to_recipe()
       } catch (error) {
         console.error('Failed to save recipe:', error)
@@ -369,6 +432,32 @@ export default {
       }
 
       return db_recipe_ingredients
+    },
+    db_recipe_steps() {
+      var db_recipe_steps = []
+      for (const step of this.steps) {
+        db_recipe_steps.push({
+          recipe_id: this.recipe_id,
+          step_id: step.step_id,
+          step_num: step.step_num
+        })
+      }
+
+      return db_recipe_steps
+    },
+    db_steps() {
+      var db_steps = []
+      for (const step of this.steps) {
+        db_steps.push({
+          step_id: step.step_id,
+          step_type_id: step.step_type_id,
+          description: step.description,
+          duration_m: step.duration_m,
+          image: null
+        })
+      }
+
+      return db_steps
     },
     return_to_recipe() {
       window.location.href = '/recipes/' + this.recipe_id
@@ -432,6 +521,38 @@ export default {
     remove_ingredient_row(recipe_ingredient_index) {
       this.recipe_ingredients.splice(recipe_ingredient_index, 1)
       this.refresh_ingredients()
+    },
+    update_step_type(step_index) {
+      var step_type_index = this.selected_step_types[step_index]
+      this.steps[step_index].step_type_id = this.step_types[step_type_index].step_type_id
+    },
+    update_duration_checkbox(step_index) {
+      if (this.duration_checkboxes[step_index]) {
+        this.steps[step_index].duration_m = 0
+      } else {
+        this.steps[step_index].duration_m = null
+      }
+    },
+    add_new_step() {
+      var step_id = api.new_step()
+
+      var max = 0
+      for (step of this.steps) {
+        if (step.step_num > max) {
+          max = step.step_num
+        }
+      }
+
+      new_step = {
+        step_id: step_id,
+        step_type_id: 0,
+        step_num: max + 1,
+        description: '',
+        duration_m: null,
+        image: null
+      }
+
+      this.steps.push(new_step)
     }
   }
 }

@@ -102,10 +102,12 @@ export async function get_steps_for_recipe(recipe_id) {
       const step = await get_step(data[i].step_id)
       const step_type = await get_step_type(step.step_type_id)
       steps.push({
+        step_id: data[i].step_id,
+        step_type_id: step.step_type_id,
         step_num: data[i].step_num,
-        step_type: step_type.name,
         description: step.description,
-        duration_m: step.duration_m
+        duration_m: step.duration_m,
+        image: step.image
       })
     }
 
@@ -160,6 +162,22 @@ export async function get_units() {
     return data
   } catch (error) {
     console.error('Error fetching units:', error.message)
+  }
+}
+
+export async function get_step_types() {
+  try {
+    const { data, error } = await supabase.from('step_types').select('*')
+
+    if (error) {
+      throw error
+    }
+
+    data.sort((a, b) => a.step_type_id - b.step_type_id)
+
+    return data
+  } catch (error) {
+    console.error('Error fetching step types:', error.message)
   }
 }
 
@@ -336,4 +354,120 @@ export async function update_recipe_ingredients(recipe_id, ingredients) {
 
   /* Add new recipe ingredients */
   await add_recipe_ingredients(ingredients)
+}
+
+async function drop_recipe_steps(recipe_id) {
+  try {
+    const { data, error } = await supabase.from('recipe_step').delete().eq('recipe_id', recipe_id)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from recipe_step:', error.message)
+  }
+}
+
+async function add_recipe_steps(recipe_steps) {
+  try {
+    const { data, error } = await supabase.from('recipe_step').insert(recipe_steps)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when adding to recipe_step:', error.message)
+  }
+}
+
+export async function update_recipe_steps(recipe_id, recipe_steps) {
+  /* Validate input */
+
+  if (recipe_steps == null) {
+    throw new Error('recipe_steps is null')
+  }
+
+  for (const recipe_step of recipe_steps) {
+    if (
+      recipe_step == null ||
+      recipe_step.recipe_id == null ||
+      recipe_step.step_id == null ||
+      recipe_step.step_num == null
+    ) {
+      throw new Error(`invalid recipe_step: ${JSON.stringify(step)}`)
+    }
+  }
+
+  /* Delete existing recipe ingredients */
+  await drop_recipe_steps(recipe_id)
+
+  /* Add new recipe ingredients */
+  await add_recipe_steps(recipe_steps)
+}
+
+async function update_step(step) {
+  try {
+    if (step == null || step.step_type_id == null || step.description == null) {
+      throw new Error(`invalid step: ${JSON.stringify(step)}`)
+    }
+
+    const { data, error } = await supabase
+      .from('steps')
+      .update([
+        {
+          step_type_id: step.step_type_id,
+          description: step.description,
+          image: step.image,
+          duration_m: step.duration_m
+        }
+      ])
+      .eq('step_id', step.step_id)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when updating step:', error.message)
+  }
+}
+
+export async function update_steps(steps) {
+  if (steps == null) {
+    throw new Error('steps is null')
+  }
+
+  for (const step of steps) {
+    await update_step(step)
+  }
+}
+
+export async function new_step() {
+  try {
+    var new_row
+    await supabase
+      .from('steps')
+      .insert([{}])
+      .then((response) => {
+        if (response.error) {
+          throw response.error
+        }
+
+        new_row = response.data[0]
+      })
+
+    var id = new_row.step_id
+    if (id === null || id === -1) {
+      throw new Error('id of new step was invalid')
+    }
+
+    return id
+  } catch (error) {
+    console.error('Error adding new step:', error.message)
+  }
 }

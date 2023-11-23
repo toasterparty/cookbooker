@@ -147,7 +147,8 @@ header span {
       <!-- Image -->
       <div class="custom-input-container">
         <label class="custom-label">Image</label>
-        <img v-if="this.recipe.image != null"
+        <img
+          v-if="this.recipe.image != null"
           :src="
             'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
             this.recipe.image
@@ -417,7 +418,7 @@ export default {
             await api.delete_file(this.recipe.image)
             this.recipe.image = null
           }
-          const filename = this.recipe.recipe_id + '-' + this.image.name
+          const filename = this.recipe.recipe_id + '-' + this.random_suffix(8) + '.jpg'
           await api.upload_file(this.image, filename)
           this.recipe.image = filename
         }
@@ -431,6 +432,17 @@ export default {
         console.error('Failed to save recipe:', error)
         alert('Failed to save recipe: ' + error)
       }
+    },
+    random_suffix(length) {
+      const validChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      let randomFilename = ''
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * validChars.length)
+        randomFilename += validChars.charAt(randomIndex)
+      }
+
+      return randomFilename
     },
     db_recipe_ingredients() {
       var db_recipe_ingredients = []

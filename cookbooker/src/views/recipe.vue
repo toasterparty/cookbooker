@@ -28,7 +28,7 @@ header span {
           'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
           this.recipe.image
         "
-        style="object-fit: contain; height: 400px; width: 400px"
+        style="object-fit: contain; height: 500px; width: 500px"
       />
       <p>{{ recipe.preamble }}</p>
       <br />

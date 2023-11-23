@@ -147,14 +147,19 @@ header span {
       <!-- Image -->
       <div class="custom-input-container">
         <label class="custom-label">Image</label>
-        <img
+        <img v-if="this.recipe.image != null"
           :src="
             'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
             this.recipe.image
           "
-          style="object-fit: contain; height: 400px; width: 400px"
+          style="object-fit: contain; height: 500px; width: 500px"
         />
-        <input type="file" @change="update_image" />
+        <div>
+          <input type="file" @change="update_image" />
+        </div>
+        <div v-if="this.recipe.image != null">
+          <button class="add-button" @click="remove_image">Delete</button>
+        </div>
       </div>
       <!-- Preamble -->
       <div class="custom-input-container">
@@ -264,9 +269,7 @@ header span {
       <ol>
         <li v-for="(step, step_index) in steps" :key="step.step_num">
           <p>
-            <button class="add-button" @click="remove_step(step_index)">
-            Remove Step
-            </button>
+            <button class="add-button" @click="remove_step(step_index)">Remove Step</button>
             <select
               v-model="selected_step_types[step_index]"
               @change="update_step_type(step_index)"
@@ -423,7 +426,7 @@ export default {
         await api.update_recipe_steps(this.recipe_id, this.db_recipe_steps())
         await api.update_steps(this.db_steps())
 
-        this.return_to_recipe()
+        // this.return_to_recipe()
       } catch (error) {
         console.error('Failed to save recipe:', error)
         alert('Failed to save recipe: ' + error)
@@ -479,7 +482,62 @@ export default {
       this.recipe.category_id = event.target.value
     },
     update_image(event) {
-      this.image = event.target.files[0]
+      const targetSizeMB = 1.0
+      const fileInput = event.target
+      const file = fileInput.files[0]
+
+      if (file) {
+        const reader = new FileReader()
+
+        reader.onload = (e) => {
+          const img = new Image()
+          img.src = e.target.result
+
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            const ctx = canvas.getContext('2d')
+
+            // Calculate the compression ratio to achieve the target size
+            const compressionRatio = (targetSizeMB * 1024 * 1024) / file.size
+            const width = img.width * Math.sqrt(compressionRatio)
+            const height = img.height * Math.sqrt(compressionRatio)
+
+            canvas.width = width
+            canvas.height = height
+
+            // Draw the image on the canvas with the new dimensions
+            ctx.drawImage(img, 0, 0, width, height)
+
+            // Convert the canvas content to a compressed data URL
+            const compressedDataURL = canvas.toDataURL('image/jpeg', 0.8) // Adjust the quality as needed (0.8 is just an example)
+
+            // Convert the data URL back to a Blob object
+            const compressedBlob = this.dataURLtoBlob(compressedDataURL)
+
+            // Set the compressed image as the new value
+            this.image = compressedBlob
+          }
+        }
+
+        reader.readAsDataURL(file)
+      }
+    },
+    // helper for above
+    dataURLtoBlob(dataURL) {
+      const arr = dataURL.split(',')
+      const mime = arr[0].match(/:(.*?);/)[1]
+      const bstr = atob(arr[1])
+      let n = bstr.length
+      const u8arr = new Uint8Array(n)
+
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n)
+      }
+
+      return new Blob([u8arr], { type: mime })
+    },
+    remove_image() {
+      this.recipe.image = null
     },
     update_recipe_ingredient_units(recipe_ingredient_index) {
       var unit_index = this.selected_units[recipe_ingredient_index]
@@ -570,7 +628,7 @@ export default {
       this.steps.splice(step_index, 1)
       this.selected_step_types.splice(step_index, 1)
       this.duration_checkboxes.splice(step_index, 1)
-    },
+    }
   }
 }
 </script>

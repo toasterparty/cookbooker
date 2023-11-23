@@ -451,10 +451,7 @@ export async function update_steps(steps) {
 
 export async function new_step() {
   try {
-    const { data, error } = await supabase
-      .from('steps')
-      .insert([{}])
-      .select()
+    const { data, error } = await supabase.from('steps').insert([{}]).select()
 
     if (error) {
       throw error

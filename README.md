@@ -34,21 +34,7 @@ Use [this](https://supabase.com/docs/guides/self-hosting#api-keys) web tool to g
 
 - Generated token using `SERVICE_KEY` for `SERVICE_ROLE_KEY`
 
-Then, create a file called `supabase/config.env` that looks like this:
-
-```
-POSTGRES_PASSWORD=<redacted>
-JWT_SECRET=<redacted>
-SERVICE_ROLE_KEY=<redacted>
-SMTP_ADMIN_EMAIL=<redacted>
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_USER=<redacted>
-SMTP_PASS=<redacted>
-SMTP_SENDER_NAME=Admin
-```
-
-...but with your secrets/information.
+Then fill in `./supabase/config.env` with your secrets/information (copy from `./supabase/default.env`).
 
 Then run `./tools/start-supabase.sh`
 
@@ -57,6 +43,13 @@ Then run `./tools/start-supabase.sh`
 I'm using the [latest tagged commit](https://github.com/supabase/supabase/tags) to decide when to update supabase:
 
 Replace `./supabase/docker-compose.yml` with the up-to-date one found on the [Supabase GitHub](https://github.com/supabase/supabase/blob/master/docker/docker-compose.yml)
+
+Add the following to the `db` docker service:
+
+```yml
+      # toaster defined
+      - ./volumes/backups/:/backups/
+```
 
 Replace `./supabase/default_conf.yml` with the up-to-date one ofund on the [Supabase GitHub](https://github.com/supabase/supabase/blob/master/docker/volumes/api/kong.yml)
 

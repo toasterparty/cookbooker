@@ -382,6 +382,8 @@ services:
       - ./volumes/db/data:/var/lib/postgresql/data:Z
       # Changes required for Analytics support
       - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
+      # toaster defined
+      - ./volumes/backups/:/backups/
 
   vector:
     container_name: supabase-vector

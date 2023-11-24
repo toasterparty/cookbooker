@@ -29,6 +29,7 @@ BACKUP_FILENAME_SQL=${BACKUP_FILENAME/.tar.gz/}
 echo "Clearing existing db for idempotency"
 $TOP_DIR/tools/stop-supabase.sh
 sudo rm -rf $SUPABASE_DIR/volumes/db/data
+sudo rm -rf $SUPABASE_DIR/volumes/storage
 $TOP_DIR/tools/start-supabase.sh
 
 # Restore the database from the backup file

@@ -51,3 +51,15 @@ SMTP_SENDER_NAME=Admin
 ...but with your secrets/information.
 
 Then run `./tools/start-supabase.sh`
+
+### Update Supabase
+
+I'm using the [latest tagged commit](https://github.com/supabase/supabase/tags) to decide when to update supabase:
+
+Replace `./supabase/docker-compose.yml` with the up-to-date one found on the [Supabase GitHub](https://github.com/supabase/supabase/blob/master/docker/docker-compose.yml)
+
+Replace `./supabase/default_conf.yml` with the up-to-date one ofund on the [Supabase GitHub](https://github.com/supabase/supabase/blob/master/docker/volumes/api/kong.yml)
+
+Then restart supabase with the stop/start sh scripts in `./tools`.
+
+If any errors occur, check the [Docker Guide](https://supabase.com/docs/guides/self-hosting/docker) for any new/modified setup steps such as [new configuration enviornment options](https://raw.githubusercontent.com/supabase/supabase/master/docker/.env.example) which should be added to `./supabase/.env`.

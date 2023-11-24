@@ -9,6 +9,5 @@ volumes/backups/
 # volumes/db/data/pg_wal/
 
 volumes/storage/
-volumes/logs/
-volumes/api/kong.yml
+# volumes/api/kong.yml
 volumes.bak/

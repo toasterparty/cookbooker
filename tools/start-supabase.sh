@@ -15,20 +15,9 @@ fi
 
 source $CONF_FILE
 
-# Generate Kong.yml with secrets
-mkdir -p $SUPABASE_DIR/volumes/api/
-cp -f $SUPABASE_DIR/default_kong.yml $KONG_YAML
-LINE=$(grep -n "username: anon" $KONG_YAML | cut -d ":" -f1)
-(( LINE+=2 ))
-sed -i "${LINE}s/.*/      - key: ${ANON_KEY}/" "$KONG_YAML"
-
-LINE=$(grep -n "username: service_role" $KONG_YAML | cut -d ":" -f1)
-(( LINE+=2 ))
-sed -i "${LINE}s/.*/      - key: ${SERVICE_ROLE_KEY}/" "$KONG_YAML"
-
 # Start Docker Containers
 cd $SUPABASE_DIR
 sudo docker compose --env-file $SUPABASE_DIR/.env --env-file $CONF_FILE up -d
 
 # Modify permissions so that they can be tracked by git
-# sudo chmod -R a+rX $SUPABASE_DIR/volumes/
+sudo chmod -R a+rX $SUPABASE_DIR/volumes/

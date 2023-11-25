@@ -28,7 +28,7 @@ rm -rf tmp
 
 $SCRIPT_DIR/start-supabase.sh
 
-# Idempotently add a cron job to do this every day at 12:30am
+# Idempotently add a cron job to do this every Tuesday at 2:30am
 cron_command="$SCRIPT_DIR/backup-supabase.sh"
 
 if crontab -l | grep -q "$cron_command"; then
@@ -36,6 +36,6 @@ if crontab -l | grep -q "$cron_command"; then
     exit 0
 fi
 
-(crontab -l 2>/dev/null; echo "30 0 * * * $cron_command") | crontab -
+(crontab -l 2>/dev/null; echo "30 02 * * 2 $cron_command") | crontab -
 
 echo "Cron job successfully added"

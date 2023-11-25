@@ -3,25 +3,30 @@ set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 TOP_DIR=$SCRIPT_DIR/..
 SUPABASE_DIR=$TOP_DIR/supabase
-BACKUP_DIR=$SUPABASE_DIR/volumes/backups
+BACKUP_DIR=$SUPABASE_DIR/backups
 
 # Specify the backup filename
 DATETIME=$(date +"%Y%m%d_%H%M%S")
-BACKUP_FILENAME="${DATETIME}_backup.sql"
+BACKUP_NAME="${DATETIME}_backup"
 
-# Ensure sufficient permissions to make a backup
-# sudo docker exec supabase-db psql --host=127.0.0.1 --port=5432 --username=supabase_admin --dbname=postgres -c 'ALTER ROLE postgres SUPERUSER;'
+$SCRIPT_DIR/stop-supabase.sh
 
-# Make the backup
-sudo docker exec -e BACKUP_FILENAME="$BACKUP_FILENAME" supabase-db pg_dumpall --clean --host=127.0.0.1 --port=5432 --database=postgres --username=supabase_admin --file=/backups/$BACKUP_FILENAME
+cd $SUPABASE_DIR
 
-# Make the backup accessible
-sudo chmod -R 777 $SUPABASE_DIR/volumes/backups/
+rm -rf tmp
+mkdir -p tmp
+mkdir -p tmp/$BACKUP_NAME
+sudo tar -cf ./tmp/$BACKUP_NAME/data.tar $SUPABASE_DIR/volumes/db/data/
+sudo tar -cf ./tmp/$BACKUP_NAME/storage.tar $SUPABASE_DIR/volumes/storage/
+cd tmp
+tar -czf $BACKUP_NAME.tar.gz $BACKUP_NAME
 
-# Archive
-cd $BACKUP_DIR
-tar -czvf ${BACKUP_FILENAME}.tar.gz $BACKUP_FILENAME
-rm -f *.sql
+cd $SUPABASE_DIR
+mkdir -p backups
+mv ./tmp/$BACKUP_NAME.tar.gz backups
+rm -rf tmp
+
+$SCRIPT_DIR/start-supabase.sh
 
 # Idempotently add a cron job to do this every day at 12:30am
 cron_command="$SCRIPT_DIR/backup-supabase.sh"

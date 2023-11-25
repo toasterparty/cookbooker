@@ -11,3 +11,5 @@ volumes/backups/
 volumes/storage/
 # volumes/api/kong.yml
 volumes.bak/
+tmp/
+backups/

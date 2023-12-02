@@ -3,6 +3,7 @@ import home from '../views/home.vue'
 import recipes from '../views/recipes.vue'
 import recipe from '../views/recipe.vue'
 import recipe_edit from '../views/recipe_edit.vue'
+import data_editor from '../views/data_editor.vue'
 
 const routes = [
   {
@@ -22,6 +23,10 @@ const routes = [
   {
     path: '/edit/:recipe_id',
     component: recipe_edit
+  },
+  {
+    path: '/data_editor',
+    component: data_editor
   }
 ]
 

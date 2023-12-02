@@ -39,7 +39,7 @@
   margin-top: 25px;
 }
 
-.custom-button,
+.save-button,
 .cancel-button {
   background-color: #4caf50;
   color: white;
@@ -51,15 +51,51 @@
   margin-right: 10px;
 }
 
-.add-button {
-  width: 75px;
+.save-button:hover {
+  background-color: #2c8f30;
 }
 
 .remove-button {
+  color: #ffffff;
+  background-color: #db8980;
+  border: none;
+  border-radius: 4px;
   width: 25px;
 }
 
-.custom-button:hover,
+.remove-button:hover {
+  background-color: #d46255;
+}
+
+.add-button {
+  width: 50px;
+  background-color: #6ccf70;
+  color: white;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12x;
+}
+
+.add-button:hover {
+  background-color: #65c069;
+}
+
+button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+select {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
 .cancel-button:hover {
   background-color: #45a049;
 }
@@ -101,7 +137,7 @@
   z-index: 999;
 }
 
-header > h1 {
+header>h1 {
   display: inline-block;
 }
 
@@ -118,28 +154,14 @@ header span {
       <!-- Name -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-name">Recipe Name</label>
-        <input
-          class="custom-input-medium"
-          id="recipe-name"
-          v-model="recipe.name"
-          type="text"
-          @input="update_recipe_name"
-        />
+        <input class="custom-input-medium" id="recipe-name" v-model="recipe.name" type="text"
+          @input="update_recipe_name" />
       </div>
       <!-- Category -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-category">Category</label>
-        <select
-          class="custom-input-medium"
-          id="recipe-category"
-          v-model="recipe.category_id"
-          @input="update_category"
-        >
-          <option
-            v-for="category in categories"
-            :key="category.category_id"
-            :value="category.category_id"
-          >
+        <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="update_category">
+          <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
             {{ category.name }}
           </option>
         </select>
@@ -147,19 +169,14 @@ header span {
       <!-- Image -->
       <div class="custom-input-container">
         <label class="custom-label">Image</label>
-        <img
-          v-if="this.recipe.image != null"
-          :src="
-            'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
-            this.recipe.image
-          "
-          style="object-fit: contain; height: 500px; width: 500px"
-        />
+        <img v-if="this.recipe.image != null" :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
+          this.recipe.image
+          " style="object-fit: contain; height: 500px; width: 500px" />
         <div>
           <input type="file" @change="update_image" />
         </div>
         <div v-if="this.recipe.image != null">
-          <button class="add-button" @click="remove_image">Delete</button>
+          <button @click="remove_image">Delete Image</button>
         </div>
       </div>
       <!-- Preamble -->
@@ -170,76 +187,41 @@ header span {
       <!-- Servings -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-servings">Servings</label>
-        <input
-          class="custom-input"
-          id="recipe-servings"
-          v-model.number="recipe.servings"
-          type="number"
-        />
+        <input class="custom-input" id="recipe-servings" v-model.number="recipe.servings" type="number" />
       </div>
       <!-- Calories per Serving -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-calories">Calories per Serving</label>
-        <input
-          class="custom-input"
-          id="recipe-calories"
-          v-model.number="recipe.calories_per_serving"
-          type="number"
-        />
+        <input class="custom-input" id="recipe-calories" v-model.number="recipe.calories_per_serving" type="number" />
       </div>
       <!-- Prep Time (minutes) -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-prep-time">Prep Time (minutes)</label>
-        <input
-          class="custom-input"
-          id="recipe-prep-time"
-          v-model.number="recipe.prep_time_m"
-          type="number"
-        />
+        <input class="custom-input" id="recipe-prep-time" v-model.number="recipe.prep_time_m" type="number" />
       </div>
       <!-- Cook Time (minutes) -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-cook-time">Cook Time (minutes)</label>
-        <input
-          class="custom-input"
-          id="recipe-cook-time"
-          v-model.number="recipe.cook_time_m"
-          type="number"
-        />
+        <input class="custom-input" id="recipe-cook-time" v-model.number="recipe.cook_time_m" type="number" />
       </div>
       <!-- Ingredients -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-cook-time">Ingredients</label>
-        <p
-          v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients"
-          :key="recipe_ingredient_index"
-        >
+        <p v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients" :key="recipe_ingredient_index">
           <button class="remove-button" @click="remove_ingredient_row(recipe_ingredient_index)">
             x
           </button>
-          <input
-            class="custom-input"
-            id="recipe-cook-time"
-            v-model.number="recipe_ingredient.quantity"
-            type="number"
-          />
-          <select
-            v-model="selected_units[recipe_ingredient_index]"
-            @change="update_recipe_ingredient_units(recipe_ingredient_index)"
-          >
+          <input class="custom-input" id="recipe-cook-time" v-model.number="recipe_ingredient.quantity" type="number" />
+          <select v-model="selected_units[recipe_ingredient_index]"
+            @change="update_recipe_ingredient_units(recipe_ingredient_index)">
             <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
               {{ unit.name }}
             </option>
           </select>
-          <select
-            v-model="selected_ingredients[recipe_ingredient_index]"
-            @change="update_recipe_ingredient_ingredient(recipe_ingredient_index)"
-          >
-            <option
-              v-for="(ingredient, ingredient_index) in ingredients"
-              :key="ingredient_index"
-              :value="ingredient_index"
-            >
+          <select v-model="selected_ingredients[recipe_ingredient_index]"
+            @change="update_recipe_ingredient_ingredient(recipe_ingredient_index)">
+            <option v-for="(ingredient, ingredient_index) in ingredients" :key="ingredient_index"
+              :value="ingredient_index">
               {{ ingredient.name }}
             </option>
             <option value="new">Add New...</option>
@@ -261,7 +243,7 @@ header span {
 
         <!-- Add ingredient to the recipe -->
         <div class="custom-input-container">
-          <button class="add-button" @click="add_ingredient_row">...</button>
+          <button class="add-button" @click="add_ingredient_row">+</button>
         </div>
       </div>
 
@@ -270,16 +252,9 @@ header span {
       <ol>
         <li v-for="(step, step_index) in steps" :key="step.step_num">
           <p>
-            <button class="add-button" @click="remove_step(step_index)">Remove Step</button>
-            <select
-              v-model="selected_step_types[step_index]"
-              @change="update_step_type(step_index)"
-            >
-              <option
-                v-for="(step_type, step_type_index) in step_types"
-                :key="step_type_index"
-                :value="step_type_index"
-              >
+            <button class="remove-button" @click="remove_step(step_index)">x</button>
+            <select v-model="selected_step_types[step_index]" @change="update_step_type(step_index)">
+              <option v-for="(step_type, step_type_index) in step_types" :key="step_type_index" :value="step_type_index">
                 {{ step_type.name }}
               </option>
             </select>
@@ -287,28 +262,16 @@ header span {
             <br />
 
             <label>
-              <input
-                type="checkbox"
-                v-model="duration_checkboxes[step_index]"
-                @change="update_duration_checkbox(step_index)"
-              />
+              <input type="checkbox" v-model="duration_checkboxes[step_index]"
+                @change="update_duration_checkbox(step_index)" />
               Duration (min):
             </label>
 
-            <input
-              v-if="step.duration_m !== null"
-              class="custom-input"
-              v-model.number="step.duration_m"
-              type="number"
-            />
+            <input v-if="step.duration_m !== null" class="custom-input" v-model.number="step.duration_m" type="number" />
 
             <br />
 
-            <textarea
-              class="custom-textarea"
-              id="recipe-preamble"
-              v-model="step.description"
-            ></textarea>
+            <textarea class="custom-textarea" id="recipe-preamble" v-model="step.description"></textarea>
           </p>
           <br />
         </li>
@@ -316,7 +279,7 @@ header span {
 
       <!-- Add step to directions -->
       <div class="custom-input-container">
-        <button class="add-button" @click="add_step">Add Step</button>
+        <button class="add-button" @click="add_step">+</button>
       </div>
 
       <br />
@@ -327,7 +290,7 @@ header span {
       </div>
       <!-- Save -->
       <div class="button-container">
-        <button class="custom-button" @click="save_recipe">Save</button>
+        <button class="save-button" @click="save_recipe">Save</button>
         <button class="cancel-button" @click="return_to_recipe">Cancel</button>
       </div>
     </div>
@@ -427,7 +390,7 @@ export default {
         await api.update_recipe_steps(this.recipe_id, this.db_recipe_steps())
         await api.update_steps(this.db_steps())
 
-        // this.return_to_recipe()
+        this.return_to_recipe()
       } catch (error) {
         console.error('Failed to save recipe:', error)
         alert('Failed to save recipe: ' + error)

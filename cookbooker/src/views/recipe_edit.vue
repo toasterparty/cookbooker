@@ -123,7 +123,7 @@ select {
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
-  padding: 20px;
+  padding: 25px;
   z-index: 1000;
 }
 

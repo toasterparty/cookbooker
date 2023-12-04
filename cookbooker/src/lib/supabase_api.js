@@ -260,7 +260,9 @@ export async function get_categories() {
 
 export async function add_ingredient(ingredient) {
   try {
-    const { data, error } = await supabase.from('ingredients').insert([ingredient])
+    const { data, error } = await supabase
+      .from('ingredients')
+      .insert([ingredient])
 
     if (error) {
       throw error
@@ -269,6 +271,98 @@ export async function add_ingredient(ingredient) {
     return data
   } catch (error) {
     console.error('Error adding new ingredient:', error.message)
+  }
+}
+
+/* "Data" Modification */
+
+async function insert_category(category) {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .insert([category])
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when adding new category:', error.message)
+  }
+}
+
+async function update_category(category) {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .update(category)
+      .eq('category_id', category.category_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when updating category:', error.message)
+  }
+}
+
+async function remove_category(category_id) {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('category_id', category_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from categories:', error.message)
+  }
+}
+
+export async function update_categories(upsert_categories, remove_categories) {
+
+  /* Validate Input */
+
+  for (const category of upsert_categories) {
+    if (
+      category == null ||
+      category.name == null ||
+      category.category_id === null
+    ) {
+      throw new Error(`invalid category: ${JSON.stringify(category)}`)
+    }
+  }
+
+  for (const category of remove_categories) {
+    if (
+      category == null ||
+      category.category_id == null
+    ) {
+      throw new Error(`invalid category: ${JSON.stringify(category)}`)
+    }
+  }
+
+  /* Add/modify Categories */
+
+  for (const category of upsert_categories) {
+    if (category.category_id === undefined) {
+      await insert_category(category)
+    } else {
+      await update_category(category)
+    }
+  }
+
+  for (const category of remove_categories) {
+    await remove_category(category.category_id)
   }
 }
 

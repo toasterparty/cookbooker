@@ -462,6 +462,101 @@ export async function update_units(upsert_units, remove_units) {
   }
 }
 
+
+/* step_type Modification */
+
+async function insert_step_type(step_type) {
+  try {
+    const { data, error } = await supabase
+      .from('step_types')
+      .insert([step_type])
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when adding new step_type:', error.message)
+  }
+}
+
+async function update_step_type(step_type) {
+  try {
+    const { data, error } = await supabase
+      .from('step_types')
+      .update(step_type)
+      .eq('step_type_id', step_type.step_type_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when updating step_type:', error.message)
+  }
+}
+
+async function remove_step_type(step_type_id) {
+  try {
+    const { data, error } = await supabase
+      .from('step_types')
+      .delete()
+      .eq('step_type_id', step_type_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from step_types:', error.message)
+  }
+}
+
+export async function update_step_types(upsert_step_types, remove_step_types) {
+
+  /* Validate Input */
+
+  for (const step_type of upsert_step_types) {
+    if (
+      step_type == null ||
+      step_type.name == null ||
+      step_type.step_type_id === null
+    ) {
+      throw new Error(`invalid step_type: ${JSON.stringify(step_type)}`)
+    }
+  }
+
+  for (const step_type of remove_step_types) {
+    if (
+      step_type == null ||
+      step_type.step_type_id == null
+    ) {
+      throw new Error(`invalid step_type: ${JSON.stringify(step_type)}`)
+    }
+  }
+
+  /* Add/modify step_types */
+
+  for (const step_type of upsert_step_types) {
+    if (step_type.step_type_id === undefined) {
+      await insert_step_type(step_type)
+    } else {
+      await update_step_type(step_type)
+    }
+  }
+
+  /* Remove step_types */
+
+  for (const step_type of remove_step_types) {
+    await remove_step_type(step_type.step_type_id)
+  }
+}
+
 /* Recipe Modification */
 
 export async function update_recipe(recipe_id, recipe) {

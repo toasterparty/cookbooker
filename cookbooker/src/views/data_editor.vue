@@ -71,7 +71,14 @@ input[type="radio"] {
         </p>
       </div>
       <div v-else-if="selected_tab == 'Step Types'">
-        Step Types
+        <p
+          v-for="(step_type, index) in step_types"
+          :key="step_type"
+        >
+          <button class="remove-button" @click="remove_step_type(index)">x</button>
+          <button class="edit-button" @click="edit_step_type(index)">✏️</button>
+          {{ step_type.name }}
+        </p>
       </div>
 
       <button class="add-button" @click="show_add_new_modal">
@@ -189,6 +196,7 @@ export default {
         }
         case 'Step Types': {
           this.selected_tab_singular = "Step Type"
+          this.remove_step_types = []
           this.step_types = await api.get_step_types()
           break
         }
@@ -227,6 +235,7 @@ export default {
           break;
         }
         case 'Step Types': {
+          obj.name = this.new_name
           break;
         }
         case 'Ingredients': {
@@ -254,6 +263,7 @@ export default {
           break;
         }
         case 'Step Types': {
+          await api.update_step_types(this.step_types, this.remove_step_types)
           break;
         }
         case 'Ingredients': {
@@ -286,6 +296,17 @@ export default {
     edit_unit(index) {
       this.is_edit_mode = true
       this.edit_obj = this.units[index]
+      this.new_name = this.edit_obj.name
+      this.is_modal_shown = true
+    },
+    remove_step_type(index) {
+      const step_type = this.step_types[index]
+      this.remove_step_types.push(step_type)
+      this.step_types.splice(index, 1)
+    },
+    edit_step_type(index) {
+      this.is_edit_mode = true
+      this.edit_obj = this.step_types[index]
       this.new_name = this.edit_obj.name
       this.is_modal_shown = true
     },

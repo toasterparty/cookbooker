@@ -68,7 +68,8 @@
 }
 
 .add-button {
-  width: 50px;
+  width: auto;
+  min-width: 40px;
   background-color: #6ccf70;
   color: white;
   padding: 3px 8px;

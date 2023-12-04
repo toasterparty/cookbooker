@@ -559,6 +559,28 @@ export async function update_step_types(upsert_step_types, remove_step_types) {
 
 /* Recipe Modification */
 
+export async function new_recipe() {
+  try {
+    const { data, error } = await supabase
+      .from('recipes')
+      .insert([{}])
+      .select()
+
+    if (error) {
+      throw error
+    }
+
+    var recipe_id = data[0].recipe_id
+    if (recipe_id === null || recipe_id === -1) {
+      throw new Error('recipe_id of new step was invalid')
+    }
+
+    return recipe_id
+  } catch (error) {
+    console.error('Error adding new recipe_id:', error.message)
+  }
+}
+
 export async function update_recipe(recipe_id, recipe) {
   try {
     const { data, error } = await supabase

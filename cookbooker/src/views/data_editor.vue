@@ -23,6 +23,19 @@ input[type="radio"] {
   font-size: 24px;
 }
 
+.edit-button {
+  color: #ffffff;
+  background-color: #cacaca;
+  border: none;
+  border-radius: 4px;
+  width: 28px;
+  font-size: 11px;
+}
+
+.edit-button:hover {
+  background-color: #d4d4d4;
+}
+
 </style>
 
 <template>
@@ -42,9 +55,8 @@ input[type="radio"] {
           v-for="(category, index) in categories"
           :key="category"
         >
-          <button class="remove-button" @click="remove_category(index)">
-            x
-          </button>
+          <button class="remove-button" @click="remove_category(index)">x</button>
+          <button class="edit-button" @click="edit_category(index)">✏️</button>
           {{ category.name }}
         </p>
       </div>
@@ -67,7 +79,8 @@ input[type="radio"] {
     <div v-if="is_modal_shown">
       <div class="modal-overlay" @click="close_modal"></div>
       <div class="modal">
-        <label class="modal-label">New {{ selected_tab_singular }}</label>
+        <label v-if="is_edit_mode" class="modal-label">Edit {{ selected_tab_singular }}</label>
+        <label v-else class="modal-label">New {{ selected_tab_singular }}</label>
         <div>
           <input type="text" class="textbox" v-model="new_name" />
         </div>
@@ -178,9 +191,6 @@ export default {
     show_add_new_modal() {
       this.is_edit_mode = false
       this.edit_obj = {}
-      this.show_modal()
-    },
-    show_modal() {
       this.new_name = null
       this.is_modal_shown = true
     },
@@ -242,6 +252,12 @@ export default {
       this.remove_categories.push(category)
       this.categories.splice(index, 1)
     },
+    edit_category(index) {
+      this.is_edit_mode = true
+      this.edit_obj = this.categories[index]
+      this.new_name = this.edit_obj.name
+      this.is_modal_shown = true
+    }
   }
 }
 </script>

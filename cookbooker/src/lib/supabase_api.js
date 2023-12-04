@@ -274,7 +274,7 @@ export async function add_ingredient(ingredient) {
   }
 }
 
-/* "Data" Modification */
+/* Category Modification */
 
 async function insert_category(category) {
   try {
@@ -361,8 +361,104 @@ export async function update_categories(upsert_categories, remove_categories) {
     }
   }
 
+  /* Remove units */
+
   for (const category of remove_categories) {
     await remove_category(category.category_id)
+  }
+}
+
+/* Unit Modification */
+
+async function insert_unit(unit) {
+  try {
+    const { data, error } = await supabase
+      .from('units')
+      .insert([unit])
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when adding new unit:', error.message)
+  }
+}
+
+async function update_unit(unit) {
+  try {
+    const { data, error } = await supabase
+      .from('units')
+      .update(unit)
+      .eq('unit_id', unit.unit_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when updating unit:', error.message)
+  }
+}
+
+async function remove_unit(unit_id) {
+  try {
+    const { data, error } = await supabase
+      .from('units')
+      .delete()
+      .eq('unit_id', unit_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from units:', error.message)
+  }
+}
+
+export async function update_units(upsert_units, remove_units) {
+
+  /* Validate Input */
+
+  for (const unit of upsert_units) {
+    if (
+      unit == null ||
+      unit.name == null ||
+      unit.unit_id === null
+    ) {
+      throw new Error(`invalid unit: ${JSON.stringify(unit)}`)
+    }
+  }
+
+  for (const unit of remove_units) {
+    if (
+      unit == null ||
+      unit.unit_id == null
+    ) {
+      throw new Error(`invalid unit: ${JSON.stringify(unit)}`)
+    }
+  }
+
+  /* Add/modify units */
+
+  for (const unit of upsert_units) {
+    if (unit.unit_id === undefined) {
+      await insert_unit(unit)
+    } else {
+      await update_unit(unit)
+    }
+  }
+
+  /* Remove units */
+
+  for (const unit of remove_units) {
+    await remove_unit(unit.unit_id)
   }
 }
 

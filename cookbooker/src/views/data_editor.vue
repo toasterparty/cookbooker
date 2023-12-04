@@ -61,7 +61,14 @@ input[type="radio"] {
         </p>
       </div>
       <div v-else-if="selected_tab == 'Units'">
-        Units
+        <p
+          v-for="(unit, index) in units"
+          :key="unit"
+        >
+          <button class="remove-button" @click="remove_unit(index)">x</button>
+          <button class="edit-button" @click="edit_unit(index)">✏️</button>
+          {{ unit.name }}
+        </p>
       </div>
       <div v-else-if="selected_tab == 'Step Types'">
         Step Types
@@ -112,9 +119,14 @@ export default {
 
       categories: null,
       remove_categories: null,
+
+      units: null,
+      remove_units: null,
+
       step_types: null,
-      tags: null,
-      units: null
+      remove_step_types: null,
+
+      tags: null
     }
   },
   async created() {
@@ -153,9 +165,14 @@ export default {
 
       this.categories = null
       this.remove_categories = null
-      this.step_types = null
-      this.tags = null
+
       this.units = null
+      this.remove_units = null
+
+      this.step_types = null
+      this.remove_step_types = null
+
+      this.tags = null
 
       switch (this.selected_tab) {
         case 'Categories': {
@@ -166,6 +183,7 @@ export default {
         }
         case 'Units': {
           this.selected_tab_singular = "Unit"
+          this.remove_units = []
           this.units = await api.get_units()
           break
         }
@@ -205,6 +223,7 @@ export default {
           break;
         }
         case 'Units': {
+          obj.name = this.new_name
           break;
         }
         case 'Step Types': {
@@ -231,6 +250,7 @@ export default {
           break;
         }
         case 'Units': {
+          await api.update_units(this.units, this.remove_units)
           break;
         }
         case 'Step Types': {
@@ -257,7 +277,18 @@ export default {
       this.edit_obj = this.categories[index]
       this.new_name = this.edit_obj.name
       this.is_modal_shown = true
-    }
+    },
+    remove_unit(index) {
+      const unit = this.units[index]
+      this.remove_units.push(unit)
+      this.units.splice(index, 1)
+    },
+    edit_unit(index) {
+      this.is_edit_mode = true
+      this.edit_obj = this.units[index]
+      this.new_name = this.edit_obj.name
+      this.is_modal_shown = true
+    },
   }
 }
 </script>

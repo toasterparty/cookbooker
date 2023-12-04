@@ -18,12 +18,13 @@ header span {
   <div class="recipe">
     <div v-if="recipe">
       <header>
-        <h1>{{ recipe.name }}</h1>
+        <h1 v-if="recipe.name">{{ recipe.name }}</h1>
+        <h1 v-else>[NEW RECIPE]</h1>
         <span>
           <a :href="'/edit/' + this.$route.params.recipe_id">edit</a>
         </span>
       </header>
-      <img
+      <img v-if="this.recipe.image"
         :src="
           'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
           this.recipe.image
@@ -32,7 +33,7 @@ header span {
       />
       <p>{{ recipe.preamble }}</p>
       <br />
-      <h2>Ingredients</h2>
+      <h2 v-if="ingredients.length > 0">Ingredients</h2>
       <br />
       <li v-for="ingredient in ingredients" :key="ingredient.name">
         <p v-if="use_unit(ingredient.units)" class="ingredient">
@@ -41,7 +42,7 @@ header span {
         <p v-else class="ingredient">{{ ingredient.quantity }} {{ ingredient.name }}s</p>
       </li>
       <br />
-      <h2>Directions</h2>
+      <h2 v-if="steps.length > 0">Directions</h2>
       <br />
       <ol>
         <li v-for="step in steps" :key="step.step_num">

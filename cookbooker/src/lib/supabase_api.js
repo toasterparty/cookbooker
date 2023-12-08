@@ -136,9 +136,32 @@ export async function get_ingredient(ingredient_id) {
   }
 }
 
+export async function search_ingredient(query) {
+  try {
+    const { data, error } = await supabase
+      .from('ingredients')
+      .select()
+      .ilike('name', `%${query}%`)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error searching for ingredient:', error.message)
+  }
+
+  return null
+}
+
 export async function get_unit(unit_id) {
   try {
-    const { data, error } = await supabase.from('units').select('*').eq('unit_id', unit_id).single()
+    const { data, error } = await supabase
+      .from('units')
+      .select('*')
+      .eq('unit_id', unit_id)
+      .single()
 
     if (error) {
       throw error
@@ -256,24 +279,6 @@ export async function get_categories() {
   }
 }
 
-/* Ingredient Modification */
-
-export async function add_ingredient(ingredient) {
-  try {
-    const { data, error } = await supabase
-      .from('ingredients')
-      .insert([ingredient])
-
-    if (error) {
-      throw error
-    }
-
-    return data
-  } catch (error) {
-    console.error('Error adding new ingredient:', error.message)
-  }
-}
-
 /* Category Modification */
 
 async function insert_category(category) {
@@ -361,7 +366,7 @@ export async function update_categories(upsert_categories, remove_categories) {
     }
   }
 
-  /* Remove units */
+  /* Remove categories */
 
   for (const category of remove_categories) {
     await remove_category(category.category_id)
@@ -462,6 +467,99 @@ export async function update_units(upsert_units, remove_units) {
   }
 }
 
+/* Ingredient Modification */
+
+export async function insert_ingredient(ingredient) {
+  try {
+    const { data, error } = await supabase
+      .from('ingredients')
+      .insert([ingredient])
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error adding new ingredient:', error.message)
+  }
+}
+
+async function update_ingredient(ingredient) {
+  try {
+    const { data, error } = await supabase
+      .from('ingredients')
+      .update(ingredient)
+      .eq('ingredient_id', ingredient.ingredient_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when updating ingredient:', error.message)
+  }
+}
+
+async function remove_ingredient(ingredient_id) {
+  try {
+    const { data, error } = await supabase
+      .from('ingredients')
+      .delete()
+      .eq('ingredient_id', ingredient_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from ingredients:', error.message)
+  }
+}
+
+export async function update_ingredients(upsert_ingredients, remove_ingredients) {
+
+  /* Validate Input */
+
+  for (const ingredient of upsert_ingredients) {
+    if (
+      ingredient == null ||
+      ingredient.name == null ||
+      ingredient.ingredient_id === null
+    ) {
+      throw new Error(`invalid ingredient: ${JSON.stringify(ingredient)}`)
+    }
+  }
+
+  for (const ingredient of remove_ingredients) {
+    if (
+      ingredient == null ||
+      ingredient.ingredient_id == null
+    ) {
+      throw new Error(`invalid ingredient: ${JSON.stringify(ingredient)}`)
+    }
+  }
+
+  /* Add/modify ingredients */
+
+  for (const ingredient of upsert_ingredients) {
+    if (ingredient.ingredient_id === undefined) {
+      await insert_ingredient(ingredient)
+    } else {
+      await update_ingredient(ingredient)
+    }
+  }
+
+  /* Remove ingredients */
+
+  for (const ingredient of remove_ingredients) {
+    await remove_ingredient(ingredient.ingredient_id)
+  }
+}
 
 /* step_type Modification */
 

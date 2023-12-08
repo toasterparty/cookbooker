@@ -35,50 +35,53 @@ input[type="radio"] {
 .edit-button:hover {
   background-color: #d4d4d4;
 }
-
 </style>
 
 <template>
   <div id="app">
-    
+
     <h1>Data Editor</h1>
 
     <label v-for="(tab, index) in tabs" :key="index">
       <input type="radio" :value="tab" v-model="selected_tab" @change="tab_changed"> {{ tab }}
     </label>
 
-    <h1 v-if="loading===true">⌛</h1>
+    <h1 v-if="loading === true">⌛</h1>
     <div v-else-if="selected_tab">
       <h2>{{ selected_tab }}</h2>
       <div v-if="selected_tab == 'Categories'">
-        <p
-          v-for="(category, index) in categories"
-          :key="category"
-        >
+        <p v-for="(category, index) in categories" :key="category.name">
           <button class="remove-button" @click="remove_category(index)">x</button>
           <button class="edit-button" @click="edit_category(index)">✏️</button>
           {{ category.name }}
         </p>
       </div>
       <div v-else-if="selected_tab == 'Units'">
-        <p
-          v-for="(unit, index) in units"
-          :key="unit"
-        >
+        <p v-for="(unit, index) in units" :key="unit.name">
           <button class="remove-button" @click="remove_unit(index)">x</button>
           <button class="edit-button" @click="edit_unit(index)">✏️</button>
           {{ unit.name }}
         </p>
       </div>
       <div v-else-if="selected_tab == 'Step Types'">
-        <p
-          v-for="(step_type, index) in step_types"
-          :key="step_type"
-        >
+        <p v-for="(step_type, index) in step_types" :key="step_type.name">
           <button class="remove-button" @click="remove_step_type(index)">x</button>
           <button class="edit-button" @click="edit_step_type(index)">✏️</button>
           {{ step_type.name }}
         </p>
+      </div>
+      <div v-else-if="selected_tab == 'Ingredients'">
+        <input type="text" class="textbox" id="ingredient_search" v-model="search_query" @input="search_ingredients"
+          placeholder="Search..." />
+
+        <p v-if="search_results && search_results.length" v-for="(ingredient, index) in search_results"
+          :key="ingredient.name">
+          <b v-if="ingredients.some(x => x.name == ingredient.name)">*</b>
+          <button class="remove-button" @click="remove_ingredient(index)">x</button>
+          <button class="edit-button" @click="edit_ingredient(index)">✏️</button>
+          {{ ingredient.name }}
+        </p>
+
       </div>
 
       <button class="add-button" @click="show_add_new_modal">
@@ -86,7 +89,7 @@ input[type="radio"] {
       </button>
 
       <div class="button-container">
-          <button class="save-button" @click="save_tab">Save</button>
+        <button class="save-button" @click="save_tab">Save</button>
       </div>
     </div>
 
@@ -133,7 +136,11 @@ export default {
       step_types: null,
       remove_step_types: null,
 
-      tags: null
+      tags: null,
+
+      ingredients: null,
+      search_query: null,
+      search_results: null
     }
   },
   async created() {
@@ -161,9 +168,9 @@ export default {
       }
     },
     async tab_changed() {
-      this.selected_tab_singular = ''
-
       this.loading = true
+
+      this.selected_tab_singular = ''
 
       this.is_modal_shown = false
       this.is_edit_mode = false
@@ -178,6 +185,10 @@ export default {
 
       this.step_types = null
       this.remove_step_types = null
+
+      this.ingredients = null
+      this.search_query = null
+      this.search_results = null
 
       this.tags = null
 
@@ -202,6 +213,8 @@ export default {
         }
         case 'Ingredients': {
           this.selected_tab_singular = "Ingredient"
+          this.remove_ingredients = []
+          this.ingredients = []
           break
         }
         case '': {
@@ -211,7 +224,7 @@ export default {
           console.error('Unexpected selected_tab')
         }
       }
-      
+
       this.loading = false
     },
     show_add_new_modal() {
@@ -239,6 +252,14 @@ export default {
           break;
         }
         case 'Ingredients': {
+          if (this.is_edit_mode === true) {
+            this.ingredients = this.ingredients.filter(x => !(x.name === obj.name));
+            obj.name = this.new_name
+            this.ingredients.push(obj)
+          } else {
+            obj.name = this.new_name
+          }
+
           break;
         }
         default: {
@@ -247,12 +268,14 @@ export default {
       }
 
       if (this.is_edit_mode === false) {
-        this.list_for_tab().push(obj) 
+        this.list_for_tab().push(obj)
       }
 
       this.close_modal()
     },
     async save_tab() {
+      this.loading = true
+
       switch (this.selected_tab) {
         case 'Categories': {
           await api.update_categories(this.categories, this.remove_categories)
@@ -267,6 +290,7 @@ export default {
           break;
         }
         case 'Ingredients': {
+          await api.update_ingredients(this.ingredients, this.remove_ingredients)
           break;
         }
         default: {
@@ -307,6 +331,36 @@ export default {
     edit_step_type(index) {
       this.is_edit_mode = true
       this.edit_obj = this.step_types[index]
+      this.new_name = this.edit_obj.name
+      this.is_modal_shown = true
+    },
+    async search_ingredients() {
+      if (this.search_query === null) {
+        this.search_results = this.ingredients
+        return
+      }
+
+      const trimmed_query = this.search_query.trim()
+      if (trimmed_query.length === 0) {
+        this.search_results = this.ingredients
+        return
+      }
+
+      this.search_results = await api.search_ingredient(trimmed_query)
+      const names = this.ingredients.map(x => x.name)
+      const ids = this.ingredients.map(x => x.ingredient_id)
+      this.search_results = this.search_results.filter(x => !(names.includes(x.name) || ids.includes(x.ingredient_id)))
+      this.search_results = this.search_results.concat(this.ingredients)
+    },
+    remove_ingredient(index) {
+      const ingredient = this.search_results[index]
+      this.remove_ingredients.push(ingredient)
+      this.search_results.splice(index, 1)
+      this.ingredients = this.ingredients.filter(x => !(x.ingredient_id === ingredient.ingredient_id));
+    },
+    edit_ingredient(index) {
+      this.is_edit_mode = true
+      this.edit_obj = this.search_results[index]
       this.new_name = this.edit_obj.name
       this.is_modal_shown = true
     },

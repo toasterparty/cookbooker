@@ -533,7 +533,7 @@ export default {
     async add_new_ingredient() {
       // TODO: check for duplicate
 
-      await api.add_ingredient({ name: this.new_ingredient })
+      await api.insert_ingredient({ name: this.new_ingredient })
       await this.refresh_ingredients()
 
       if (this.new_recipe_ingredient_index !== null) {

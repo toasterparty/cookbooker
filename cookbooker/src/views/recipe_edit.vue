@@ -5,16 +5,11 @@
   align-items: flex-start;
 }
 
-.custom-input-container {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 10px;
-}
-
 .custom-label {
   font-size: 20px;
   margin-top: 20px;
   margin-bottom: 5px;
+  display: block;
 }
 
 .custom-input {
@@ -23,6 +18,7 @@
   border-radius: 4px;
   font-size: 16px;
   width: 80px;
+  margin-bottom: 10px;
 }
 
 .custom-input-medium {
@@ -31,6 +27,21 @@
   border-radius: 4px;
   font-size: 16px;
   width: 300px;
+}
+
+.recipe-ingredient-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-size: 18px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.recipe-ingredient-button:hover {
+  text-decoration: underline;
 }
 
 .button-container {
@@ -159,93 +170,82 @@ header span {
           @input="update_recipe_name" />
       </div>
       <!-- Category -->
-      <div class="custom-input-container">
-        <label class="custom-label" for="recipe-category">Category</label>
-        <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="update_category">
-          <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
-            {{ category.name }}
-          </option>
-        </select>
-      </div>
+      <label class="custom-label" for="recipe-category">Category</label>
+      <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="update_category">
+        <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
+          {{ category.name }}
+        </option>
+      </select>
       <!-- Image -->
-      <div class="custom-input-container">
-        <label class="custom-label">Image</label>
-        <img v-if="this.recipe.image != null" :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
-          this.recipe.image
-          " style="object-fit: contain; height: 500px; width: 500px" />
-        <div>
-          <input type="file" @change="update_image" />
-        </div>
-        <div v-if="this.recipe.image != null">
-          <button @click="remove_image">Delete Image</button>
-        </div>
+      <label class="custom-label">Image</label>
+      <img v-if="this.recipe.image != null" :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
+        this.recipe.image
+        " style="object-fit: contain; height: 500px; width: 500px" />
+      <div>
+        <input type="file" @change="update_image" />
+      </div>
+      <div v-if="this.recipe.image != null">
+        <button @click="remove_image">Delete Image</button>
       </div>
       <!-- Preamble -->
-      <div class="custom-input-container">
-        <label class="custom-label" for="recipe-preamble">Preamble</label>
-        <textarea class="custom-textarea" id="recipe-preamble" v-model="recipe.preamble"></textarea>
-      </div>
+      <label class="custom-label" for="recipe-preamble">Preamble</label>
+      <textarea class="custom-textarea" id="recipe-preamble" v-model="recipe.preamble"></textarea>
       <!-- Servings -->
-      <div class="custom-input-container">
-        <label class="custom-label" for="recipe-servings">Servings</label>
-        <input class="custom-input" id="recipe-servings" v-model.number="recipe.servings" type="number" />
-      </div>
+      <label class="custom-label" for="recipe-servings">Servings</label>
+      <input class="custom-input" id="recipe-servings" v-model.number="recipe.servings" type="number" />
       <!-- Calories per Serving -->
-      <div class="custom-input-container">
-        <label class="custom-label" for="recipe-calories">Calories per Serving</label>
-        <input class="custom-input" id="recipe-calories" v-model.number="recipe.calories_per_serving" type="number" />
-      </div>
+      <label class="custom-label" for="recipe-calories">Calories per Serving</label>
+      <input class="custom-input" id="recipe-calories" v-model.number="recipe.calories_per_serving" type="number" />
       <!-- Prep Time (minutes) -->
-      <div class="custom-input-container">
-        <label class="custom-label" for="recipe-prep-time">Prep Time (minutes)</label>
-        <input class="custom-input" id="recipe-prep-time" v-model.number="recipe.prep_time_m" type="number" />
-      </div>
+      <label class="custom-label" for="recipe-prep-time">Prep Time (minutes)</label>
+      <input class="custom-input" id="recipe-prep-time" v-model.number="recipe.prep_time_m" type="number" />
       <!-- Cook Time (minutes) -->
-      <div class="custom-input-container">
-        <label class="custom-label" for="recipe-cook-time">Cook Time (minutes)</label>
-        <input class="custom-input" id="recipe-cook-time" v-model.number="recipe.cook_time_m" type="number" />
-      </div>
-      <!-- Ingredients -->
-      <div class="custom-input-container">
-        <label class="custom-label" for="recipe-cook-time">Ingredients</label>
-        <p v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients" :key="recipe_ingredient_index">
-          <button class="remove-button" @click="remove_ingredient_row(recipe_ingredient_index)">
-            x
-          </button>
-          <input class="custom-input" id="recipe-cook-time" v-model.number="recipe_ingredient.quantity" type="number" />
-          <select v-model="selected_units[recipe_ingredient_index]"
-            @change="update_recipe_ingredient_units(recipe_ingredient_index)">
-            <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
-              {{ unit.name }}
-            </option>
-          </select>
-          <select v-model="selected_ingredients[recipe_ingredient_index]"
-            @change="update_recipe_ingredient_ingredient(recipe_ingredient_index)">
-            <option v-for="(ingredient, ingredient_index) in ingredients" :key="ingredient_index"
-              :value="ingredient_index">
-              {{ ingredient.name }}
-            </option>
-            <option value="new">Add New...</option>
-          </select>
+      <label class="custom-label" for="recipe-cook-time">Cook Time (minutes)</label>
+      <input class="custom-input" id="recipe-cook-time" v-model.number="recipe.cook_time_m" type="number" />
+      <!-- Recipe Ingredients -->
+      <label class="custom-label" for="recipe-ingredients">Ingredients</label>
+
+      <p v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients" :key="recipe_ingredient_index">
+        <button class="remove-button" @click="remove_ingredient_row(recipe_ingredient_index)">
+          x
+        </button>
+
+        <input class="custom-input" id="recipe-ingredient-quantity" v-model.number="recipe_ingredient.quantity" type="number" />
+
+        <select v-model="selected_units[recipe_ingredient_index]"
+          @change="update_recipe_ingredient_units(recipe_ingredient_index)">
+          <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
+            {{ unit.name }}
+          </option>
+        </select>
+
+        <button class="recipe-ingredient-button" @click="edit_ingredient(recipe_ingredient_index)">
+          {{ recipe_ingredient.name }}
+        </button>
+      </p>
+
+      <!-- Modal for editing ingredient for ingredient row -->
+      <div v-if="show_edit_ingredient_modal">
+      <div class="modal-overlay" @click="hide_edit_ingredient_modal"></div>
+      <div class="modal">
+        <label for="edit_ingredient">Select Ingredient</label>
+
+        <input type="text" class="textbox" id="ingredient_search" v-model="search_query" @input="search_ingredients"
+          placeholder="Search..." />
+
+        <p v-if="search_results && search_results.length" v-for="(ingredient, index) in search_results"
+          :key="ingredient.name">
+          <button class="recipe-ingredient-button" @click="select_ingredient(index)">{{ ingredient.name }}</button>
         </p>
 
-        <!-- Modal for adding custom ingredient -->
-        <div v-if="show_new_ingredient_modal">
-          <div class="modal-overlay" @click="hide_new_ingredient_modal"></div>
-          <div class="modal">
-            <label for="new_ingredient">Enter New Ingredient</label>
-            <br />
-            <input type="text" id="new_ingredient" v-model="new_ingredient" />
-            <br />
-            <button @click="add_new_ingredient">Add</button>
-            <button @click="hide_new_ingredient_modal">Cancel</button>
-          </div>
-        </div>
+        <button @click="hide_edit_ingredient_modal">Cancel</button>
 
-        <!-- Add ingredient to the recipe -->
-        <div class="custom-input-container">
-          <button class="add-button" @click="add_ingredient_row">+</button>
-        </div>
+      </div>
+    </div>
+
+      <!-- Add ingredient to the recipe -->
+      <div class="custom-input-container">
+        <button class="add-button" @click="add_ingredient_row">+</button>
       </div>
 
       <!-- Steps -->
@@ -279,16 +279,14 @@ header span {
       </ol>
 
       <!-- Add step to directions -->
-      <div class="custom-input-container">
-        <button class="add-button" @click="add_step">+</button>
-      </div>
+      <button class="add-button" @click="add_step">+</button>
 
-      <br />
       <!-- Source -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-source">Source</label>
         <input class="custom-input-medium" id="recipe-source" v-model="recipe.source" type="text" />
       </div>
+
       <!-- Save -->
       <div class="button-container">
         <button class="save-button" @click="save_recipe">Save</button>
@@ -316,12 +314,12 @@ export default {
       step_types: null,
       selected_units: [],
       ingredients: null,
+      search_results: null,
+      search_query: null,
       selected_ingredients: [],
-      show_new_ingredient_modal: false,
-      new_ingredient: null,
-      new_ingredient_index: null,
+      show_edit_ingredient_modal: false,
       selected_step_types: [],
-      duration_checkboxes: []
+      duration_checkboxes: [],
     }
   },
   async created() {
@@ -349,7 +347,6 @@ export default {
     async refresh_ingredients() {
       this.ingredients = await api.get_ingredients()
       this.selected_units = []
-      this.selected_ingredients = []
 
       for (const recipe_ingredient of this.recipe_ingredients) {
         /* Find and record which unit is selected for each recipe ingredient */
@@ -361,18 +358,6 @@ export default {
           }
         }
         this.selected_units.push(index)
-
-        /* Find and record which ingredient is selected for each recipe ingredient */
-        index = null
-        if (recipe_ingredient.ingredient_id !== null) {
-          index = this.ingredients.findIndex(
-            (ingredient) => ingredient.ingredient_id === recipe_ingredient.ingredient_id
-          )
-          if (index === -1) {
-            index = null
-          }
-        }
-        this.selected_ingredients.push(index)
       }
     },
     async save_recipe() {
@@ -519,43 +504,6 @@ export default {
       var unit_index = this.selected_units[recipe_ingredient_index]
       this.recipe_ingredients[recipe_ingredient_index].units = this.units[unit_index]
     },
-    update_recipe_ingredient_ingredient(recipe_ingredient_index) {
-      if (this.selected_ingredients[recipe_ingredient_index] === 'new') {
-        this.show_new_ingredient_modal = true
-        this.new_recipe_ingredient_index = recipe_ingredient_index
-        return
-      }
-
-      var ingredient_index = this.selected_ingredients[recipe_ingredient_index]
-      this.recipe_ingredients[recipe_ingredient_index].ingredient_id =
-        this.ingredients[ingredient_index].ingredient_id
-    },
-    async add_new_ingredient() {
-      // TODO: check for duplicate
-
-      await api.insert_ingredient({ name: this.new_ingredient })
-      await this.refresh_ingredients()
-
-      if (this.new_recipe_ingredient_index !== null) {
-        var ingredient_index = this.ingredients.findIndex(
-          (ingredient) => ingredient.name === this.new_ingredient
-        )
-        if (ingredient_index === -1) {
-          throw new Error("Couldn't find " + this.new_ingredient + ' in database')
-        }
-
-        this.selected_ingredients[this.new_recipe_ingredient_index] = ingredient_index
-        var ingredient_id = this.ingredients[ingredient_index].ingredient_id
-        this.recipe_ingredients[this.new_recipe_ingredient_index].ingredient_id = ingredient_id
-      }
-
-      this.hide_new_ingredient_modal()
-    },
-    hide_new_ingredient_modal() {
-      this.show_new_ingredient_modal = false
-      this.new_ingredient = null
-      this.new_recipe_ingredient_index = null
-    },
     add_ingredient_row() {
       this.recipe_ingredients.push({
         ...this.recipe_ingredients[this.recipe_ingredients.length - 1]
@@ -565,6 +513,35 @@ export default {
     remove_ingredient_row(recipe_ingredient_index) {
       this.recipe_ingredients.splice(recipe_ingredient_index, 1)
       this.refresh_ingredients()
+    },
+    edit_ingredient(recipe_ingredient_index) {
+      this.ingredient_to_edit = this.recipe_ingredients[recipe_ingredient_index]
+      this.search_results = null
+      this.search_query = null
+      this.show_edit_ingredient_modal = true
+    },
+    async search_ingredients() {
+      if (this.search_query === null) {
+        this.search_results = null
+        return
+      }
+
+      const trimmed_query = this.search_query.trim()
+      if (trimmed_query.length === 0) {
+        this.search_results = null
+        return
+      }
+
+      this.search_results = await api.search_ingredient(trimmed_query)
+    },
+    hide_edit_ingredient_modal() {
+      this.show_edit_ingredient_modal = false
+      this.ingredient_to_edit = null
+    },
+    select_ingredient(index) {
+      const ingredient = this.search_results[index]
+      this.ingredient_to_edit.ingredient_id = ingredient.ingredient_id
+      this.hide_edit_ingredient_modal()
     },
     update_step_type(step_index) {
       var step_type_index = this.selected_step_types[step_index]

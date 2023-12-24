@@ -33,7 +33,7 @@ header span {
       />
       <p>{{ recipe.preamble }}</p>
       <br />
-      <h2 v-if="ingredients.length > 0">Ingredients</h2>
+      <h2 v-if="ingredients && ingredients.length > 0">Ingredients</h2>
       <br />
       <li v-for="ingredient in ingredients" :key="ingredient.name">
         <p v-if="use_unit(ingredient.units)" class="ingredient">
@@ -42,7 +42,7 @@ header span {
         <p v-else class="ingredient">{{ ingredient.quantity }} {{ ingredient.name }}s</p>
       </li>
       <br />
-      <h2 v-if="steps.length > 0">Directions</h2>
+      <h2 v-if="steps && steps.length > 0">Directions</h2>
       <br />
       <ol>
         <li v-for="step in steps" :key="step.step_num">

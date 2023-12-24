@@ -286,6 +286,7 @@ async function insert_category(category) {
     const { data, error } = await supabase
       .from('categories')
       .insert([category])
+      .select()
 
     if (error) {
       throw error
@@ -380,6 +381,7 @@ async function insert_unit(unit) {
     const { data, error } = await supabase
       .from('units')
       .insert([unit])
+      .select()
 
     if (error) {
       throw error
@@ -474,6 +476,7 @@ export async function insert_ingredient(ingredient) {
     const { data, error } = await supabase
       .from('ingredients')
       .insert([ingredient])
+      .select()
 
     if (error) {
       throw error
@@ -568,6 +571,7 @@ async function insert_step_type(step_type) {
     const { data, error } = await supabase
       .from('step_types')
       .insert([step_type])
+      .select()
 
     if (error) {
       throw error

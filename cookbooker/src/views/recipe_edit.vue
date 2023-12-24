@@ -226,21 +226,22 @@ header span {
 
       <!-- Modal for editing ingredient for ingredient row -->
       <div v-if="show_edit_ingredient_modal">
-      <div class="modal-overlay" @click="hide_edit_ingredient_modal"></div>
-      <div class="modal">
-        <label for="edit_ingredient">Select Ingredient</label>
+        <div class="modal-overlay" @click="hide_edit_ingredient_modal"></div>
+        <div class="modal">
+          <label class="custom-label" style="margin-top: 0px;" for="edit_ingredient">Select Ingredient</label>
 
-        <input type="text" class="textbox" id="ingredient_search" v-model="search_query" @input="search_ingredients"
-          placeholder="Search..." />
+          <input style="display: block;" type="text" class="textbox" id="ingredient_search" v-model="search_query" @input="search_ingredients"
+            placeholder="Search..." />
 
-        <p v-if="search_results && search_results.length" v-for="(ingredient, index) in search_results"
-          :key="ingredient.name">
-          <button class="recipe-ingredient-button" @click="select_ingredient(index)">{{ ingredient.name }}</button>
-        </p>
+          <p style="display: block;" v-if="search_results && search_results.length" v-for="(ingredient, index) in search_results"
+            :key="index">
+            <button class="recipe-ingredient-button" @click="select_ingredient(search_results[index])">{{ ingredient.name }}</button>
+          </p>
 
-        <button @click="hide_edit_ingredient_modal">Cancel</button>
+          <button v-if="show_add_new_ingredient_button" class="save-button" @click="create_ingredient_and_select">Add New</button>
+          <button class="cancel-button" @click="hide_edit_ingredient_modal">Cancel</button>
 
-      </div>
+        </div>
     </div>
 
       <!-- Add ingredient to the recipe -->
@@ -313,9 +314,9 @@ export default {
       units: null,
       step_types: null,
       selected_units: [],
-      ingredients: null,
       search_results: null,
       search_query: null,
+      show_add_new_ingredient_button: false,
       selected_ingredients: [],
       show_edit_ingredient_modal: false,
       selected_step_types: [],
@@ -345,7 +346,6 @@ export default {
       }
     },
     async refresh_ingredients() {
-      this.ingredients = await api.get_ingredients()
       this.selected_units = []
 
       for (const recipe_ingredient of this.recipe_ingredients) {
@@ -518,30 +518,47 @@ export default {
       this.ingredient_to_edit = this.recipe_ingredients[recipe_ingredient_index]
       this.search_results = null
       this.search_query = null
+      this.show_add_new_ingredient_button = false
       this.show_edit_ingredient_modal = true
     },
     async search_ingredients() {
       if (this.search_query === null) {
         this.search_results = null
+        this.show_add_new_ingredient_button = false
         return
       }
 
       const trimmed_query = this.search_query.trim()
       if (trimmed_query.length === 0) {
         this.search_results = null
+        this.show_add_new_ingredient_button = false
         return
       }
 
       this.search_results = await api.search_ingredient(trimmed_query)
+
+      this.search_results.sort((a, b) => a.name > b.name)
+
+      this.show_add_new_ingredient_button = !this.search_results.some(result => result.name.toLowerCase() === trimmed_query.toLowerCase())
     },
     hide_edit_ingredient_modal() {
       this.show_edit_ingredient_modal = false
       this.ingredient_to_edit = null
     },
-    select_ingredient(index) {
-      const ingredient = this.search_results[index]
+    select_ingredient(ingredient) {
       this.ingredient_to_edit.ingredient_id = ingredient.ingredient_id
+      this.ingredient_to_edit.name = ingredient.name
       this.hide_edit_ingredient_modal()
+    },
+    async create_ingredient_and_select() {
+      const ingredient = await api.insert_ingredient({name: this.search_query.trim()})
+
+      if (!ingredient) {
+        console.error("insert_ingredient returned: ", ingredient)
+        return
+      }
+
+      this.select_ingredient(ingredient[0])
     },
     update_step_type(step_index) {
       var step_type_index = this.selected_step_types[step_index]

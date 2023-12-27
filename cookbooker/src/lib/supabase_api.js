@@ -248,6 +248,8 @@ export async function get_ingredients_for_recipe(recipe_id) {
         name: ingredient.name,
         ingredient_id: recipe_ingredients[i].ingredient_id,
         quantity: recipe_ingredients[i].quantity,
+        numerator: recipe_ingredients[i].numerator,
+        denominator: recipe_ingredients[i].denominator,
         units: units
       })
     }

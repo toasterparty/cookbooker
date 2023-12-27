@@ -1,15 +1,35 @@
 <style>
-.ingredient {
-  display: inline;
-}
-
 header > h1 {
   display: inline-block;
 }
+
 header span {
   margin-left: 3px;
   vertical-align: super;
   font-size: smaller;
+}
+
+.fraction {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.fraction .numerator {
+  border-bottom: 1px solid #000;
+  padding: 0.5px 1px;
+  display: block;
+}
+
+.units {
+  display: inline-flex;
+  align-items: center;
+}
+
+.whole-number {
+  font-size: 1.5em;
+  margin-right: 5px;
+  vertical-align: middle;
 }
 </style>
 
@@ -37,10 +57,18 @@ header span {
       <h2 v-if="ingredients && ingredients.length > 0">Ingredients</h2>
       <br />
       <li v-for="ingredient in ingredients" :key="ingredient.name">
-        <p v-if="use_unit(ingredient.units)" class="ingredient">
-          {{ ingredient.quantity }} {{ ingredient.units.name }}s {{ ingredient.name }}
+        <p v-if="ingredient.numerator && ingredient.denominator" style="display: inline" class="units">
+          <span class="whole-number">{{ ingredient.quantity }}</span>
+          <span class="fraction">
+            <span class="numerator">{{ ingredient.numerator }}</span>
+            <span class="denominator">{{ ingredient.denominator }}</span>
+          </span>
+          {{ ingredient_string(ingredient) }}
         </p>
-        <p v-else class="ingredient">{{ ingredient.quantity }} {{ ingredient.name }}s</p>
+        <p v-else style="display: inline">
+          <span class="whole-number">{{ ingredient.quantity }}</span>
+          {{ ingredient_string(ingredient) }}
+        </p>
       </li>
       <br />
       <h2 v-if="steps && steps.length > 0">Directions</h2>
@@ -81,9 +109,32 @@ export default {
     this.ingredients = await api.get_ingredients_for_recipe(recipe_id)
   },
   methods: {
-    use_unit(unit) {
-      // don't use if it's not specified, or if it's the "Count" unit
-      return !(unit === null || unit.unit_id === 0)
+    ingredient_string(ingredient)
+    {
+      if (!ingredient.quantity)
+      {
+        console.error("No quantity for ingredient: ", ingredient)
+        return
+      }
+
+      const units = ingredient.units
+      const use_unit = !(units === null || units.unit_id === 0)
+
+      var output = ""
+
+      if (use_unit)
+      {
+        output += ingredient.units.name + "s "
+      }
+
+      output += ingredient.name
+
+      if (!use_unit)
+      {
+        output += "s"
+      }
+
+      return output
     }
   }
 }

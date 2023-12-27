@@ -21,6 +21,15 @@
   margin-bottom: 10px;
 }
 
+.custom-input-small {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  width: 55px;
+  margin-bottom: 10px;
+}
+
 .custom-input-medium {
   padding: 10px;
   border: 1px solid #ccc;
@@ -257,6 +266,21 @@ header span {
           id="recipe-ingredient-quantity"
           v-model.number="recipe_ingredient.quantity"
           type="number"
+        /> <input
+          type="checkbox"
+          v-model="ingredient_checkboxes[recipe_ingredient_index]"
+          @change="update_ingredient_checkbox(recipe_ingredient_index)"
+        /> <input v-if="ingredient_checkboxes[recipe_ingredient_index]"
+          class="custom-input-small"
+          id="recipe-ingredient-quantity"
+          v-model.number="recipe_ingredient.numerator"
+          type="number"
+        /> <span v-if="ingredient_checkboxes[recipe_ingredient_index]" >
+        / </span> <input
+          class="custom-input-small" v-if="ingredient_checkboxes[recipe_ingredient_index]"
+          id="recipe-ingredient-quantity"
+          v-model.number="recipe_ingredient.denominator"
+          type="number"
         />
 
         <select
@@ -401,6 +425,7 @@ export default {
       recipe: null,
       steps: null,
       recipe_ingredients: null,
+      ingredient_checkboxes: [],
       categories: null,
       image: null,
       units: null,
@@ -439,6 +464,7 @@ export default {
     },
     async refresh_ingredients() {
       this.selected_units = []
+      this.ingredient_checkboxes = []
 
       for (const recipe_ingredient of this.recipe_ingredients) {
         /* Find and record which unit is selected for each recipe ingredient */
@@ -450,6 +476,7 @@ export default {
           }
         }
         this.selected_units.push(index)
+        this.ingredient_checkboxes.push(recipe_ingredient.numerator !== null && recipe_ingredient.denominator !== null)
       }
     },
     async save_recipe() {
@@ -492,6 +519,8 @@ export default {
           recipe_id: this.recipe_id,
           ingredient_id: ingredient.ingredient_id,
           quantity: ingredient.quantity,
+          numerator: ingredient.numerator,
+          denominator: ingredient.denominator,
           unit_id: ingredient.units.unit_id
           // optional: false
         })
@@ -597,9 +626,23 @@ export default {
       this.recipe_ingredients[recipe_ingredient_index].units = this.units[unit_index]
     },
     add_ingredient_row() {
-      this.recipe_ingredients.push({
-        ...this.recipe_ingredients[this.recipe_ingredients.length - 1]
-      })
+      if (this.recipe_ingredients.length === 0) {
+        this.recipe_ingredients.push({
+          name: "<Select Ingredient>",
+          ingredient_id: 0,
+          quantity: 1,
+          numerator: null,
+          denominator: null,
+          units: {
+            unit_id: 0,
+            name: "Count"
+          }
+        })
+      } else {
+        this.recipe_ingredients.push({
+          ...this.recipe_ingredients[this.recipe_ingredients.length - 1]
+        })
+      }
       this.refresh_ingredients()
     },
     remove_ingredient_row(recipe_ingredient_index) {
@@ -653,6 +696,15 @@ export default {
       }
 
       this.select_ingredient(ingredient[0])
+    },
+    update_ingredient_checkbox(index) {
+      if (this.ingredient_checkboxes[index]) {
+        this.recipe_ingredients[index].numerator = 1
+        this.recipe_ingredients[index].denominator = 4
+      } else {
+        this.recipe_ingredients[index].numerator = null
+        this.recipe_ingredients[index].denominator = null
+      }
     },
     update_step_type(step_index) {
       var step_type_index = this.selected_step_types[step_index]

@@ -3,7 +3,7 @@ label {
   margin-right: 50px;
 }
 
-input[type="radio"] {
+input[type='radio'] {
   margin-top: 20px;
   margin-right: 5px;
   margin-bottom: 50px;
@@ -39,11 +39,10 @@ input[type="radio"] {
 
 <template>
   <div id="app">
-
     <h1>Data Editor</h1>
 
     <label v-for="(tab, index) in tabs" :key="index">
-      <input type="radio" :value="tab" v-model="selected_tab" @change="tab_changed"> {{ tab }}
+      <input type="radio" :value="tab" v-model="selected_tab" @change="tab_changed" /> {{ tab }}
     </label>
 
     <h1 v-if="loading === true">⌛</h1>
@@ -71,22 +70,28 @@ input[type="radio"] {
         </p>
       </div>
       <div v-else-if="selected_tab == 'Ingredients'">
-        <input type="text" class="textbox" id="ingredient_search" v-model="search_query" @input="search_ingredients"
-          placeholder="Search..." />
+        <input
+          type="text"
+          class="textbox"
+          id="ingredient_search"
+          v-model="search_query"
+          @input="search_ingredients"
+          placeholder="Search..."
+        />
 
-        <p v-if="search_results && search_results.length" v-for="(ingredient, index) in search_results"
-          :key="ingredient.name">
-          <b v-if="ingredients.some(x => x.name == ingredient.name)">*</b>
+        <p
+          v-if="search_results && search_results.length"
+          v-for="(ingredient, index) in search_results"
+          :key="ingredient.name"
+        >
+          <b v-if="ingredients.some((x) => x.name == ingredient.name)">*</b>
           <button class="remove-button" @click="remove_ingredient(index)">x</button>
           <button class="edit-button" @click="edit_ingredient(index)">✏️</button>
           {{ ingredient.name }}
         </p>
-
       </div>
 
-      <button class="add-button" @click="show_add_new_modal">
-        +
-      </button>
+      <button class="add-button" @click="show_add_new_modal">+</button>
 
       <div class="button-container">
         <button class="save-button" @click="save_tab">Save</button>
@@ -105,7 +110,6 @@ input[type="radio"] {
         <button @click="close_modal">Cancel</button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -194,25 +198,25 @@ export default {
 
       switch (this.selected_tab) {
         case 'Categories': {
-          this.selected_tab_singular = "Category"
+          this.selected_tab_singular = 'Category'
           this.remove_categories = []
           this.categories = await api.get_categories()
           break
         }
         case 'Units': {
-          this.selected_tab_singular = "Unit"
+          this.selected_tab_singular = 'Unit'
           this.remove_units = []
           this.units = await api.get_units()
           break
         }
         case 'Step Types': {
-          this.selected_tab_singular = "Step Type"
+          this.selected_tab_singular = 'Step Type'
           this.remove_step_types = []
           this.step_types = await api.get_step_types()
           break
         }
         case 'Ingredients': {
-          this.selected_tab_singular = "Ingredient"
+          this.selected_tab_singular = 'Ingredient'
           this.remove_ingredients = []
           this.ingredients = []
           break
@@ -241,26 +245,26 @@ export default {
       switch (this.selected_tab) {
         case 'Categories': {
           obj.name = this.new_name
-          break;
+          break
         }
         case 'Units': {
           obj.name = this.new_name
-          break;
+          break
         }
         case 'Step Types': {
           obj.name = this.new_name
-          break;
+          break
         }
         case 'Ingredients': {
           if (this.is_edit_mode === true) {
-            this.ingredients = this.ingredients.filter(x => !(x.name === obj.name));
+            this.ingredients = this.ingredients.filter((x) => !(x.name === obj.name))
             obj.name = this.new_name
             this.ingredients.push(obj)
           } else {
             obj.name = this.new_name
           }
 
-          break;
+          break
         }
         default: {
           console.error('Unexpected selected_tab')
@@ -279,19 +283,19 @@ export default {
       switch (this.selected_tab) {
         case 'Categories': {
           await api.update_categories(this.categories, this.remove_categories)
-          break;
+          break
         }
         case 'Units': {
           await api.update_units(this.units, this.remove_units)
-          break;
+          break
         }
         case 'Step Types': {
           await api.update_step_types(this.step_types, this.remove_step_types)
-          break;
+          break
         }
         case 'Ingredients': {
           await api.update_ingredients(this.ingredients, this.remove_ingredients)
-          break;
+          break
         }
         default: {
           console.error('Unexpected selected_tab')
@@ -347,23 +351,27 @@ export default {
       }
 
       this.search_results = await api.search_ingredient(trimmed_query)
-      const names = this.ingredients.map(x => x.name)
-      const ids = this.ingredients.map(x => x.ingredient_id)
-      this.search_results = this.search_results.filter(x => !(names.includes(x.name) || ids.includes(x.ingredient_id)))
+      const names = this.ingredients.map((x) => x.name)
+      const ids = this.ingredients.map((x) => x.ingredient_id)
+      this.search_results = this.search_results.filter(
+        (x) => !(names.includes(x.name) || ids.includes(x.ingredient_id))
+      )
       this.search_results = this.search_results.concat(this.ingredients)
     },
     remove_ingredient(index) {
       const ingredient = this.search_results[index]
       this.remove_ingredients.push(ingredient)
       this.search_results.splice(index, 1)
-      this.ingredients = this.ingredients.filter(x => !(x.ingredient_id === ingredient.ingredient_id));
+      this.ingredients = this.ingredients.filter(
+        (x) => !(x.ingredient_id === ingredient.ingredient_id)
+      )
     },
     edit_ingredient(index) {
       this.is_edit_mode = true
       this.edit_obj = this.search_results[index]
       this.new_name = this.edit_obj.name
       this.is_modal_shown = true
-    },
+    }
   }
 }
 </script>

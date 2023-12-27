@@ -24,7 +24,8 @@ header span {
           <a :href="'/edit/' + this.$route.params.recipe_id">edit</a>
         </span>
       </header>
-      <img v-if="this.recipe.image"
+      <img
+        v-if="this.recipe.image"
         :src="
           'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
           this.recipe.image

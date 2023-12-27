@@ -1,10 +1,8 @@
 <style>
-
 .recipe-listing {
   font-size: 20px;
   padding: 3px 8px;
 }
-
 </style>
 
 <template>
@@ -16,12 +14,18 @@
       </ul>
     </div>
     <div v-else>
-      <button class="add-button" @click="new_recipe">
-        Create New
-      </button>
+      <button class="add-button" @click="new_recipe">Create New</button>
       <div v-for="recipe in recipes" :key="recipe.name">
-        <a v-if="recipe.name" class="recipe-listing" :href="'/recipes/' + recipe.recipe_id" target="_blank">{{ recipe.name }}</a>
-        <a v-else class="recipe-listing" :href="'/recipes/' + recipe.recipe_id" target="_blank">[NEW RECIPE]</a>
+        <a
+          v-if="recipe.name"
+          class="recipe-listing"
+          :href="'/recipes/' + recipe.recipe_id"
+          target="_blank"
+          >{{ recipe.name }}</a
+        >
+        <a v-else class="recipe-listing" :href="'/recipes/' + recipe.recipe_id" target="_blank"
+          >[NEW RECIPE]</a
+        >
       </div>
     </div>
   </div>

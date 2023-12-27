@@ -138,10 +138,7 @@ export async function get_ingredient(ingredient_id) {
 
 export async function search_ingredient(query) {
   try {
-    const { data, error } = await supabase
-      .from('ingredients')
-      .select()
-      .ilike('name', `%${query}%`)
+    const { data, error } = await supabase.from('ingredients').select().ilike('name', `%${query}%`)
 
     if (error) {
       throw error
@@ -157,11 +154,7 @@ export async function search_ingredient(query) {
 
 export async function get_unit(unit_id) {
   try {
-    const { data, error } = await supabase
-      .from('units')
-      .select('*')
-      .eq('unit_id', unit_id)
-      .single()
+    const { data, error } = await supabase.from('units').select('*').eq('unit_id', unit_id).single()
 
     if (error) {
       throw error
@@ -283,10 +276,7 @@ export async function get_categories() {
 
 async function insert_category(category) {
   try {
-    const { data, error } = await supabase
-      .from('categories')
-      .insert([category])
-      .select()
+    const { data, error } = await supabase.from('categories').insert([category]).select()
 
     if (error) {
       throw error
@@ -335,24 +325,16 @@ async function remove_category(category_id) {
 }
 
 export async function update_categories(upsert_categories, remove_categories) {
-
   /* Validate Input */
 
   for (const category of upsert_categories) {
-    if (
-      category == null ||
-      category.name == null ||
-      category.category_id === null
-    ) {
+    if (category == null || category.name == null || category.category_id === null) {
       throw new Error(`invalid category: ${JSON.stringify(category)}`)
     }
   }
 
   for (const category of remove_categories) {
-    if (
-      category == null ||
-      category.category_id == null
-    ) {
+    if (category == null || category.category_id == null) {
       throw new Error(`invalid category: ${JSON.stringify(category)}`)
     }
   }
@@ -378,10 +360,7 @@ export async function update_categories(upsert_categories, remove_categories) {
 
 async function insert_unit(unit) {
   try {
-    const { data, error } = await supabase
-      .from('units')
-      .insert([unit])
-      .select()
+    const { data, error } = await supabase.from('units').insert([unit]).select()
 
     if (error) {
       throw error
@@ -413,11 +392,7 @@ async function update_unit(unit) {
 
 async function remove_unit(unit_id) {
   try {
-    const { data, error } = await supabase
-      .from('units')
-      .delete()
-      .eq('unit_id', unit_id)
-      .single()
+    const { data, error } = await supabase.from('units').delete().eq('unit_id', unit_id).single()
 
     if (error) {
       throw error
@@ -430,24 +405,16 @@ async function remove_unit(unit_id) {
 }
 
 export async function update_units(upsert_units, remove_units) {
-
   /* Validate Input */
 
   for (const unit of upsert_units) {
-    if (
-      unit == null ||
-      unit.name == null ||
-      unit.unit_id === null
-    ) {
+    if (unit == null || unit.name == null || unit.unit_id === null) {
       throw new Error(`invalid unit: ${JSON.stringify(unit)}`)
     }
   }
 
   for (const unit of remove_units) {
-    if (
-      unit == null ||
-      unit.unit_id == null
-    ) {
+    if (unit == null || unit.unit_id == null) {
       throw new Error(`invalid unit: ${JSON.stringify(unit)}`)
     }
   }
@@ -473,10 +440,7 @@ export async function update_units(upsert_units, remove_units) {
 
 export async function insert_ingredient(ingredient) {
   try {
-    const { data, error } = await supabase
-      .from('ingredients')
-      .insert([ingredient])
-      .select()
+    const { data, error } = await supabase.from('ingredients').insert([ingredient]).select()
 
     if (error) {
       throw error
@@ -525,24 +489,16 @@ async function remove_ingredient(ingredient_id) {
 }
 
 export async function update_ingredients(upsert_ingredients, remove_ingredients) {
-
   /* Validate Input */
 
   for (const ingredient of upsert_ingredients) {
-    if (
-      ingredient == null ||
-      ingredient.name == null ||
-      ingredient.ingredient_id === null
-    ) {
+    if (ingredient == null || ingredient.name == null || ingredient.ingredient_id === null) {
       throw new Error(`invalid ingredient: ${JSON.stringify(ingredient)}`)
     }
   }
 
   for (const ingredient of remove_ingredients) {
-    if (
-      ingredient == null ||
-      ingredient.ingredient_id == null
-    ) {
+    if (ingredient == null || ingredient.ingredient_id == null) {
       throw new Error(`invalid ingredient: ${JSON.stringify(ingredient)}`)
     }
   }
@@ -568,10 +524,7 @@ export async function update_ingredients(upsert_ingredients, remove_ingredients)
 
 async function insert_step_type(step_type) {
   try {
-    const { data, error } = await supabase
-      .from('step_types')
-      .insert([step_type])
-      .select()
+    const { data, error } = await supabase.from('step_types').insert([step_type]).select()
 
     if (error) {
       throw error
@@ -620,24 +573,16 @@ async function remove_step_type(step_type_id) {
 }
 
 export async function update_step_types(upsert_step_types, remove_step_types) {
-
   /* Validate Input */
 
   for (const step_type of upsert_step_types) {
-    if (
-      step_type == null ||
-      step_type.name == null ||
-      step_type.step_type_id === null
-    ) {
+    if (step_type == null || step_type.name == null || step_type.step_type_id === null) {
       throw new Error(`invalid step_type: ${JSON.stringify(step_type)}`)
     }
   }
 
   for (const step_type of remove_step_types) {
-    if (
-      step_type == null ||
-      step_type.step_type_id == null
-    ) {
+    if (step_type == null || step_type.step_type_id == null) {
       throw new Error(`invalid step_type: ${JSON.stringify(step_type)}`)
     }
   }
@@ -663,10 +608,7 @@ export async function update_step_types(upsert_step_types, remove_step_types) {
 
 export async function new_recipe() {
   try {
-    const { data, error } = await supabase
-      .from('recipes')
-      .insert([{}])
-      .select()
+    const { data, error } = await supabase.from('recipes').insert([{}]).select()
 
     if (error) {
       throw error

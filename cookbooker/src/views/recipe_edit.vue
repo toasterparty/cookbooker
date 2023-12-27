@@ -149,7 +149,7 @@ select {
   z-index: 999;
 }
 
-header>h1 {
+header > h1 {
   display: inline-block;
 }
 
@@ -166,21 +166,40 @@ header span {
       <!-- Name -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-name">Recipe Name</label>
-        <input class="custom-input-medium" id="recipe-name" v-model="recipe.name" type="text"
-          @input="update_recipe_name" />
+        <input
+          class="custom-input-medium"
+          id="recipe-name"
+          v-model="recipe.name"
+          type="text"
+          @input="update_recipe_name"
+        />
       </div>
       <!-- Category -->
       <label class="custom-label" for="recipe-category">Category</label>
-      <select class="custom-input-medium" id="recipe-category" v-model="recipe.category_id" @input="update_category">
-        <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
+      <select
+        class="custom-input-medium"
+        id="recipe-category"
+        v-model="recipe.category_id"
+        @input="update_category"
+      >
+        <option
+          v-for="category in categories"
+          :key="category.category_id"
+          :value="category.category_id"
+        >
           {{ category.name }}
         </option>
       </select>
       <!-- Image -->
       <label class="custom-label">Image</label>
-      <img v-if="this.recipe.image != null" :src="'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
-        this.recipe.image
-        " style="object-fit: contain; height: 500px; width: 500px" />
+      <img
+        v-if="this.recipe.image != null"
+        :src="
+          'https://kong.toasterparty.net/storage/v1/object/public/recipe-images/' +
+          this.recipe.image
+        "
+        style="object-fit: contain; height: 500px; width: 500px"
+      />
       <div>
         <input type="file" @change="update_image" />
       </div>
@@ -192,28 +211,58 @@ header span {
       <textarea class="custom-textarea" id="recipe-preamble" v-model="recipe.preamble"></textarea>
       <!-- Servings -->
       <label class="custom-label" for="recipe-servings">Servings</label>
-      <input class="custom-input" id="recipe-servings" v-model.number="recipe.servings" type="number" />
+      <input
+        class="custom-input"
+        id="recipe-servings"
+        v-model.number="recipe.servings"
+        type="number"
+      />
       <!-- Calories per Serving -->
       <label class="custom-label" for="recipe-calories">Calories per Serving</label>
-      <input class="custom-input" id="recipe-calories" v-model.number="recipe.calories_per_serving" type="number" />
+      <input
+        class="custom-input"
+        id="recipe-calories"
+        v-model.number="recipe.calories_per_serving"
+        type="number"
+      />
       <!-- Prep Time (minutes) -->
       <label class="custom-label" for="recipe-prep-time">Prep Time (minutes)</label>
-      <input class="custom-input" id="recipe-prep-time" v-model.number="recipe.prep_time_m" type="number" />
+      <input
+        class="custom-input"
+        id="recipe-prep-time"
+        v-model.number="recipe.prep_time_m"
+        type="number"
+      />
       <!-- Cook Time (minutes) -->
       <label class="custom-label" for="recipe-cook-time">Cook Time (minutes)</label>
-      <input class="custom-input" id="recipe-cook-time" v-model.number="recipe.cook_time_m" type="number" />
+      <input
+        class="custom-input"
+        id="recipe-cook-time"
+        v-model.number="recipe.cook_time_m"
+        type="number"
+      />
       <!-- Recipe Ingredients -->
       <label class="custom-label" for="recipe-ingredients">Ingredients</label>
 
-      <p v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients" :key="recipe_ingredient_index">
+      <p
+        v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients"
+        :key="recipe_ingredient_index"
+      >
         <button class="remove-button" @click="remove_ingredient_row(recipe_ingredient_index)">
           x
         </button>
 
-        <input class="custom-input" id="recipe-ingredient-quantity" v-model.number="recipe_ingredient.quantity" type="number" />
+        <input
+          class="custom-input"
+          id="recipe-ingredient-quantity"
+          v-model.number="recipe_ingredient.quantity"
+          type="number"
+        />
 
-        <select v-model="selected_units[recipe_ingredient_index]"
-          @change="update_recipe_ingredient_units(recipe_ingredient_index)">
+        <select
+          v-model="selected_units[recipe_ingredient_index]"
+          @change="update_recipe_ingredient_units(recipe_ingredient_index)"
+        >
           <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
             {{ unit.name }}
           </option>
@@ -228,21 +277,45 @@ header span {
       <div v-if="show_edit_ingredient_modal">
         <div class="modal-overlay" @click="hide_edit_ingredient_modal"></div>
         <div class="modal">
-          <label class="custom-label" style="margin-top: 0px;" for="edit_ingredient">Select Ingredient</label>
+          <label class="custom-label" style="margin-top: 0px" for="edit_ingredient"
+            >Select Ingredient</label
+          >
 
-          <input style="display: block;" type="text" class="textbox" id="ingredient_search" v-model="search_query" @input="search_ingredients"
-            placeholder="Search..." />
+          <input
+            style="display: block"
+            type="text"
+            class="textbox"
+            id="ingredient_search"
+            v-model="search_query"
+            @input="search_ingredients"
+            placeholder="Search..."
+          />
 
-          <p style="display: block;" v-if="search_results && search_results.length" v-for="(ingredient, index) in search_results"
-            :key="index">
-            <button class="recipe-ingredient-button" @click="select_ingredient(search_results[index])">{{ ingredient.name }}</button>
+          <!-- TODO: Why isn't this alphabetical? -->
+          <p
+            style="display: block"
+            v-if="search_results && search_results.length"
+            v-for="(ingredient, index) in search_results"
+            :key="index"
+          >
+            <button
+              class="recipe-ingredient-button"
+              @click="select_ingredient(search_results[index])"
+            >
+              {{ ingredient.name }}
+            </button>
           </p>
 
-          <button v-if="show_add_new_ingredient_button" class="save-button" @click="create_ingredient_and_select">Add New</button>
+          <button
+            v-if="show_add_new_ingredient_button"
+            class="save-button"
+            @click="create_ingredient_and_select"
+          >
+            Add New
+          </button>
           <button class="cancel-button" @click="hide_edit_ingredient_modal">Cancel</button>
-
         </div>
-    </div>
+      </div>
 
       <!-- Add ingredient to the recipe -->
       <div class="custom-input-container">
@@ -255,8 +328,15 @@ header span {
         <li v-for="(step, step_index) in steps" :key="step.step_num">
           <p>
             <button class="remove-button" @click="remove_step(step_index)">x</button>
-            <select v-model="selected_step_types[step_index]" @change="update_step_type(step_index)">
-              <option v-for="(step_type, step_type_index) in step_types" :key="step_type_index" :value="step_type_index">
+            <select
+              v-model="selected_step_types[step_index]"
+              @change="update_step_type(step_index)"
+            >
+              <option
+                v-for="(step_type, step_type_index) in step_types"
+                :key="step_type_index"
+                :value="step_type_index"
+              >
                 {{ step_type.name }}
               </option>
             </select>
@@ -264,16 +344,28 @@ header span {
             <br />
 
             <label>
-              <input type="checkbox" v-model="duration_checkboxes[step_index]"
-                @change="update_duration_checkbox(step_index)" />
+              <input
+                type="checkbox"
+                v-model="duration_checkboxes[step_index]"
+                @change="update_duration_checkbox(step_index)"
+              />
               Duration (min):
             </label>
 
-            <input v-if="step.duration_m !== null" class="custom-input" v-model.number="step.duration_m" type="number" />
+            <input
+              v-if="step.duration_m !== null"
+              class="custom-input"
+              v-model.number="step.duration_m"
+              type="number"
+            />
 
             <br />
 
-            <textarea class="custom-textarea" id="recipe-preamble" v-model="step.description"></textarea>
+            <textarea
+              class="custom-textarea"
+              id="recipe-preamble"
+              v-model="step.description"
+            ></textarea>
           </p>
           <br />
         </li>
@@ -320,7 +412,7 @@ export default {
       selected_ingredients: [],
       show_edit_ingredient_modal: false,
       selected_step_types: [],
-      duration_checkboxes: [],
+      duration_checkboxes: []
     }
   },
   async created() {
@@ -539,7 +631,9 @@ export default {
 
       this.search_results.sort((a, b) => a.name > b.name)
 
-      this.show_add_new_ingredient_button = !this.search_results.some(result => result.name.toLowerCase() === trimmed_query.toLowerCase())
+      this.show_add_new_ingredient_button = !this.search_results.some(
+        (result) => result.name.toLowerCase() === trimmed_query.toLowerCase()
+      )
     },
     hide_edit_ingredient_modal() {
       this.show_edit_ingredient_modal = false
@@ -551,10 +645,10 @@ export default {
       this.hide_edit_ingredient_modal()
     },
     async create_ingredient_and_select() {
-      const ingredient = await api.insert_ingredient({name: this.search_query.trim()})
+      const ingredient = await api.insert_ingredient({ name: this.search_query.trim() })
 
       if (!ingredient) {
-        console.error("insert_ingredient returned: ", ingredient)
+        console.error('insert_ingredient returned: ', ingredient)
         return
       }
 

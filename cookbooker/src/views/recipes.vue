@@ -15,7 +15,7 @@
     </div>
     <div v-else>
       <button class="add-button" @click="new_recipe">Create New</button>
-      <div v-for="recipe in recipes" :key="recipe.name">
+      <div v-for="(recipe, index) in recipes" :key="index">
         <a
           v-if="recipe.name"
           class="recipe-listing"

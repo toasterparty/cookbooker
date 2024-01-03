@@ -56,7 +56,7 @@ header span {
       <br />
       <h2 v-if="ingredients && ingredients.length > 0">Ingredients</h2>
       <br />
-      <li v-for="ingredient in ingredients" :key="ingredient.name">
+      <li v-for="(ingredient, index) in ingredients" :key="index">
         <p v-if="ingredient.numerator && ingredient.denominator" style="display: inline" class="units">
           <span class="whole-number">{{ ingredient.quantity }}</span>
           <span class="fraction">

@@ -192,8 +192,8 @@ header span {
         @input="update_category"
       >
         <option
-          v-for="category in categories"
-          :key="category.category_id"
+          v-for="(category, index) in categories"
+          :key="index"
           :value="category.category_id"
         >
           {{ category.name }}
@@ -671,8 +671,6 @@ export default {
       }
 
       this.search_results = await api.search_ingredient(trimmed_query)
-
-      this.search_results.sort((a, b) => a.name > b.name)
 
       this.show_add_new_ingredient_button = !this.search_results.some(
         (result) => result.name.toLowerCase() === trimmed_query.toLowerCase()

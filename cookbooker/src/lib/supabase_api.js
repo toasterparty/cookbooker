@@ -1,5 +1,17 @@
 import { supabase } from './supabase_client'
 
+/* Helper */
+
+export async function sort_by_name(list) {
+  return list.sort((a, b) => {
+    const name_a = a.name ? a.name.toLowerCase() : '';
+    const name_b = b.name ? b.name.toLowerCase() : '';
+    if (name_a > name_b) return 1;
+    if (name_a < name_b) return -1;
+    return 0;
+  })
+}
+
 /* General */
 
 export async function upload_file(file, filename) {
@@ -33,7 +45,7 @@ export async function delete_file(filename) {
 
 export async function get_all_recipes() {
   const { data } = await supabase.from('recipes').select()
-  return data
+  return sort_by_name(data)
 }
 
 export async function get_recipe(recipe_id) {
@@ -138,13 +150,16 @@ export async function get_ingredient(ingredient_id) {
 
 export async function search_ingredient(query) {
   try {
-    const { data, error } = await supabase.from('ingredients').select().ilike('name', `%${query}%`)
+    const { data, error } = await supabase
+      .from('ingredients')
+      .select()
+      .ilike('name', `%${query}%`)
 
     if (error) {
       throw error
     }
 
-    return data
+    return sort_by_name(data)
   } catch (error) {
     console.error('Error searching for ingredient:', error.message)
   }
@@ -174,9 +189,7 @@ export async function get_units() {
       throw error
     }
 
-    data.sort((a, b) => a.unit_id - b.unit_id)
-
-    return data
+    return sort_by_name(data)
   } catch (error) {
     console.error('Error fetching units:', error.message)
   }
@@ -190,9 +203,7 @@ export async function get_step_types() {
       throw error
     }
 
-    data.sort((a, b) => a.step_type_id - b.step_type_id)
-
-    return data
+    return sort_by_name(data)
   } catch (error) {
     console.error('Error fetching step types:', error.message)
   }
@@ -217,13 +228,15 @@ async function get_recipe_ingredients(recipe_id) {
 
 export async function get_ingredients() {
   try {
-    const { data, error } = await supabase.from('ingredients').select('*')
+    const { data, error } = await supabase
+      .from('ingredients')
+      .select('*')
 
     if (error) {
       throw error
     }
 
-    return data
+    return sort_by_name(data)
   } catch (error) {
     console.error('Error fetching ingredients:', error.message)
   }
@@ -268,7 +281,7 @@ export async function get_categories() {
       throw error
     }
 
-    return data
+    return sort_by_name(data)
   } catch (error) {
     console.error('Error fetching categories:', error.message)
   }

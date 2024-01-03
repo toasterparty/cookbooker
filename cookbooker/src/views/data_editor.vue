@@ -49,21 +49,21 @@ input[type='radio'] {
     <div v-else-if="selected_tab">
       <h2>{{ selected_tab }}</h2>
       <div v-if="selected_tab == 'Categories'">
-        <p v-for="(category, index) in categories" :key="category.name">
+        <p v-for="(category, index) in categories" :key="index">
           <button class="remove-button" @click="remove_category(index)">x</button>
           <button class="edit-button" @click="edit_category(index)">✏️</button>
           {{ category.name }}
         </p>
       </div>
       <div v-else-if="selected_tab == 'Units'">
-        <p v-for="(unit, index) in units" :key="unit.name">
+        <p v-for="(unit, index) in units" :key="index">
           <button class="remove-button" @click="remove_unit(index)">x</button>
           <button class="edit-button" @click="edit_unit(index)">✏️</button>
           {{ unit.name }}
         </p>
       </div>
       <div v-else-if="selected_tab == 'Step Types'">
-        <p v-for="(step_type, index) in step_types" :key="step_type.name">
+        <p v-for="(step_type, index) in step_types" :key="index">
           <button class="remove-button" @click="remove_step_type(index)">x</button>
           <button class="edit-button" @click="edit_step_type(index)">✏️</button>
           {{ step_type.name }}
@@ -82,7 +82,7 @@ input[type='radio'] {
         <p
           v-if="search_results && search_results.length"
           v-for="(ingredient, index) in search_results"
-          :key="ingredient.name"
+          :key="index"
         >
           <b v-if="ingredients.some((x) => x.name == ingredient.name)">*</b>
           <button class="remove-button" @click="remove_ingredient(index)">x</button>

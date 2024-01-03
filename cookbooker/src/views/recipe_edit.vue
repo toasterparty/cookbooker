@@ -191,11 +191,7 @@ header span {
         v-model="recipe.category_id"
         @input="update_category"
       >
-        <option
-          v-for="(category, index) in categories"
-          :key="index"
-          :value="category.category_id"
-        >
+        <option v-for="(category, index) in categories" :key="index" :value="category.category_id">
           {{ category.name }}
         </option>
       </select>
@@ -266,18 +262,23 @@ header span {
           id="recipe-ingredient-quantity"
           v-model.number="recipe_ingredient.quantity"
           type="number"
-        /> <input
+        />
+        <input
           type="checkbox"
           v-model="ingredient_checkboxes[recipe_ingredient_index]"
           @change="update_ingredient_checkbox(recipe_ingredient_index)"
-        /> <input v-if="ingredient_checkboxes[recipe_ingredient_index]"
+        />
+        <input
+          v-if="ingredient_checkboxes[recipe_ingredient_index]"
           class="custom-input-small"
           id="recipe-ingredient-quantity"
           v-model.number="recipe_ingredient.numerator"
           type="number"
-        /> <span v-if="ingredient_checkboxes[recipe_ingredient_index]" >
-        / </span> <input
-          class="custom-input-small" v-if="ingredient_checkboxes[recipe_ingredient_index]"
+        />
+        <span v-if="ingredient_checkboxes[recipe_ingredient_index]"> / </span>
+        <input
+          class="custom-input-small"
+          v-if="ingredient_checkboxes[recipe_ingredient_index]"
           id="recipe-ingredient-quantity"
           v-model.number="recipe_ingredient.denominator"
           type="number"
@@ -476,7 +477,9 @@ export default {
           }
         }
         this.selected_units.push(index)
-        this.ingredient_checkboxes.push(recipe_ingredient.numerator !== null && recipe_ingredient.denominator !== null)
+        this.ingredient_checkboxes.push(
+          recipe_ingredient.numerator !== null && recipe_ingredient.denominator !== null
+        )
       }
     },
     async save_recipe() {
@@ -628,14 +631,14 @@ export default {
     add_ingredient_row() {
       if (this.recipe_ingredients.length === 0) {
         this.recipe_ingredients.push({
-          name: "<Select Ingredient>",
+          name: '<Select Ingredient>',
           ingredient_id: 0,
           quantity: 1,
           numerator: null,
           denominator: null,
           units: {
             unit_id: 0,
-            name: "Count"
+            name: 'Count'
           }
         })
       } else {

@@ -57,7 +57,11 @@ header span {
       <h2 v-if="ingredients && ingredients.length > 0">Ingredients</h2>
       <br />
       <li v-for="(ingredient, index) in ingredients" :key="index">
-        <p v-if="ingredient.numerator && ingredient.denominator" style="display: inline" class="units">
+        <p
+          v-if="ingredient.numerator && ingredient.denominator"
+          style="display: inline"
+          class="units"
+        >
           <span class="whole-number">{{ ingredient.quantity }}</span>
           <span class="fraction">
             <span class="numerator">{{ ingredient.numerator }}</span>
@@ -109,29 +113,25 @@ export default {
     this.ingredients = await api.get_ingredients_for_recipe(recipe_id)
   },
   methods: {
-    ingredient_string(ingredient)
-    {
-      if (!ingredient.quantity)
-      {
-        console.error("No quantity for ingredient: ", ingredient)
+    ingredient_string(ingredient) {
+      if (!ingredient.quantity) {
+        console.error('No quantity for ingredient: ', ingredient)
         return
       }
 
       const units = ingredient.units
       const use_unit = !(units === null || units.unit_id === 0)
 
-      var output = ""
+      var output = ''
 
-      if (use_unit)
-      {
-        output += ingredient.units.name + "s "
+      if (use_unit) {
+        output += ingredient.units.name + 's '
       }
 
       output += ingredient.name
 
-      if (!use_unit)
-      {
-        output += "s"
+      if (!use_unit) {
+        output += 's'
       }
 
       return output

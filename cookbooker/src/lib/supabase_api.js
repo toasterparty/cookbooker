@@ -4,11 +4,11 @@ import { supabase } from './supabase_client'
 
 export function sort_by_name(list) {
   return list.sort((a, b) => {
-    const name_a = a.name ? a.name.toLowerCase() : '';
-    const name_b = b.name ? b.name.toLowerCase() : '';
-    if (name_a > name_b) return 1;
-    if (name_a < name_b) return -1;
-    return 0;
+    const name_a = a.name ? a.name.toLowerCase() : ''
+    const name_b = b.name ? b.name.toLowerCase() : ''
+    if (name_a > name_b) return 1
+    if (name_a < name_b) return -1
+    return 0
   })
 }
 
@@ -150,10 +150,7 @@ export async function get_ingredient(ingredient_id) {
 
 export async function search_ingredient(query) {
   try {
-    const { data, error } = await supabase
-      .from('ingredients')
-      .select()
-      .ilike('name', `%${query}%`)
+    const { data, error } = await supabase.from('ingredients').select().ilike('name', `%${query}%`)
 
     if (error) {
       throw error
@@ -228,9 +225,7 @@ async function get_recipe_ingredients(recipe_id) {
 
 export async function get_ingredients() {
   try {
-    const { data, error } = await supabase
-      .from('ingredients')
-      .select('*')
+    const { data, error } = await supabase.from('ingredients').select('*')
 
     if (error) {
       throw error

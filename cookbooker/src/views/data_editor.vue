@@ -84,7 +84,7 @@ input[type='radio'] {
           v-for="(ingredient, index) in search_results"
           :key="index"
         >
-          <b v-if="ingredients.some((x) => x.name == ingredient.name)">*</b>
+          <b v-if="ingredients !== null && ingredients.some((x) => x.name == ingredient.name)">*</b>
           <button class="remove-button" @click="remove_ingredient(index)">x</button>
           <button class="edit-button" @click="edit_ingredient(index)">✏️</button>
           {{ ingredient.name }}
@@ -260,10 +260,11 @@ export default {
             this.ingredients = this.ingredients.filter((x) => !(x.name === obj.name))
             obj.name = this.new_name
             this.ingredients.push(obj)
+            this.ingredients = api.sort_by_name(this.ingredients)
           } else {
             obj.name = this.new_name
+            this.search_results.push(obj)
           }
-
           break
         }
         default: {
@@ -272,7 +273,9 @@ export default {
       }
 
       if (this.is_edit_mode === false) {
-        this.list_for_tab().push(obj)
+        var list = this.list_for_tab()
+        list.push(obj)
+        list = api.sort_by_name(list)
       }
 
       this.close_modal()
@@ -340,13 +343,15 @@ export default {
     },
     async search_ingredients() {
       if (this.search_query === null) {
-        this.search_results = this.ingredients
+        this.search_results = []
+        this.search_results.concat(this.ingredients)
         return
       }
 
       const trimmed_query = this.search_query.trim()
       if (trimmed_query.length === 0) {
-        this.search_results = this.ingredients
+        this.search_results = []
+        this.search_results.concat(this.ingredients)
         return
       }
 

@@ -2,7 +2,7 @@ import { supabase } from './supabase_client'
 
 /* Helper */
 
-export async function sort_by_name(list) {
+export function sort_by_name(list) {
   return list.sort((a, b) => {
     const name_a = a.name ? a.name.toLowerCase() : '';
     const name_b = b.name ? b.name.toLowerCase() : '';

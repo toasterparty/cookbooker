@@ -262,7 +262,7 @@ export async function get_ingredients_for_recipe(recipe_id) {
       })
     }
 
-    return ingredients
+    return sort_by_name(ingredients)
   } catch (error) {
     console.error('Error fetching ingredients for recipe:', error.message)
   }

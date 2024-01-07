@@ -55,8 +55,7 @@ header span {
       <p>{{ recipe.preamble }}</p>
       <br />
       <h2 v-if="ingredients && ingredients.length > 0">Ingredients</h2>
-      <br />
-      <li v-for="(ingredient, index) in ingredients" :key="index">
+        <div v-for="(ingredient, index) in ingredients" :key="index">
         <p
           v-if="ingredient.numerator && ingredient.denominator"
           style="display: inline"
@@ -73,10 +72,9 @@ header span {
           <span class="whole-number">{{ ingredient.quantity }}</span>
           {{ ingredient_string(ingredient) }}
         </p>
-      </li>
+      </div>
       <br />
       <h2 v-if="steps && steps.length > 0">Directions</h2>
-      <br />
       <ol>
         <li v-for="step in steps" :key="step.step_num">
           <p>

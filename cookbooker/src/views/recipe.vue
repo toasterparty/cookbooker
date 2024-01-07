@@ -31,6 +31,10 @@ header span {
   margin-right: 5px;
   vertical-align: middle;
 }
+
+.header-label {
+  margin-bottom: 10px;
+}
 </style>
 
 <!-- TODO: CSS instead of br -->
@@ -38,7 +42,7 @@ header span {
   <div class="recipe">
     <div v-if="recipe">
       <header>
-        <h1 v-if="recipe.name">{{ recipe.name }}</h1>
+        <h1 v-if="recipe.name" class="header-label">{{ recipe.name }}</h1>
         <h1 v-else>[NEW RECIPE]</h1>
         <span>
           <a :href="'/edit/' + this.$route.params.recipe_id">edit</a>
@@ -54,14 +58,14 @@ header span {
       />
       <p>{{ recipe.preamble }}</p>
       <br />
-      <h2 v-if="ingredients && ingredients.length > 0">Ingredients</h2>
+      <h2 v-if="ingredients && ingredients.length > 0" class="header-label">Ingredients</h2>
         <div v-for="(ingredient, index) in ingredients" :key="index">
         <p
           v-if="ingredient.numerator && ingredient.denominator"
           style="display: inline"
           class="units"
         >
-          <span class="whole-number">{{ ingredient.quantity }}</span>
+          <span v-if="ingredient.quantity" class="whole-number">{{ ingredient.quantity }}</span>
           <span class="fraction">
             <span class="numerator">{{ ingredient.numerator }}</span>
             <span class="denominator">{{ ingredient.denominator }}</span>
@@ -74,7 +78,7 @@ header span {
         </p>
       </div>
       <br />
-      <h2 v-if="steps && steps.length > 0">Directions</h2>
+      <h2 v-if="steps && steps.length > 0" class="header-label">Directions</h2>
       <ol>
         <li v-for="step in steps" :key="step.step_num">
           <p>
@@ -112,7 +116,7 @@ export default {
   },
   methods: {
     ingredient_string(ingredient) {
-      if (!ingredient.quantity) {
+      if (ingredient.quantity === null || ingredient.quantity === undefined) {
         console.error('No quantity for ingredient: ', ingredient)
         return
       }

@@ -1,11 +1,23 @@
-# To Do
-
-- Ingredient sections (e.g. sauce separate from everything else)
-- Display calories etc. on recipe page
-- Implement tags
-- Cleaner adding of new recipe ingredients to recipe when more than 1 already exists
-
 ## Bugs
 
-- Puralization of things ending in `x`
-- Mixed number with 0 whole number
+- All of the plurlaization issues
+
+- Calories etc. on recipe page
+
+# Features
+
+- Step notes
+
+- Custom ingredient ordering
+
+- Ingredient sections (e.g. sauce separate from everything else)
+
+- Implement tags
+
+- Ingredient qualifications (e.g. overripe bananas, softened butter)
+
+# Improvements
+
+- Cleaner adding of new recipe ingredients to recipe when more than 1 already exists
+
+- Better mobile formatting

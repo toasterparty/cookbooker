@@ -6,15 +6,13 @@
 
 # Features
 
+- **Implement tags**
+
 - Step notes
 
 - Custom ingredient ordering
 
 - Ingredient sections (e.g. sauce separate from everything else)
-
-- Implement tags
-
-- Ingredient qualifications (e.g. overripe bananas, softened butter)
 
 # Improvements
 

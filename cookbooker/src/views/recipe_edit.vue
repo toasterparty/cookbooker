@@ -249,7 +249,8 @@ header span {
       <!-- Recipe Ingredients -->
       <label class="custom-label" for="recipe-ingredients">Ingredients</label>
 
-      <p
+      <div
+        style="padding-left: 10px; padding-top: 20px; padding-bottom: 20px"
         v-for="(recipe_ingredient, recipe_ingredient_index) in recipe_ingredients"
         :key="recipe_ingredient_index"
       >
@@ -257,46 +258,69 @@ header span {
           x
         </button>
 
-        <input
-          class="custom-input"
-          id="recipe-ingredient-quantity"
-          v-model.number="recipe_ingredient.quantity"
-          type="number"
-        />
-        <input
-          type="checkbox"
-          v-model="ingredient_checkboxes[recipe_ingredient_index]"
-          @change="update_ingredient_checkbox(recipe_ingredient_index)"
-        />
-        <input
-          v-if="ingredient_checkboxes[recipe_ingredient_index]"
-          class="custom-input-small"
-          id="recipe-ingredient-quantity"
-          v-model.number="recipe_ingredient.numerator"
-          type="number"
-        />
-        <span v-if="ingredient_checkboxes[recipe_ingredient_index]"> / </span>
-        <input
-          class="custom-input-small"
-          v-if="ingredient_checkboxes[recipe_ingredient_index]"
-          id="recipe-ingredient-quantity"
-          v-model.number="recipe_ingredient.denominator"
-          type="number"
-        />
-
-        <select
-          v-model="selected_units[recipe_ingredient_index]"
-          @change="update_recipe_ingredient_units(recipe_ingredient_index)"
-        >
-          <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
-            {{ unit.name }}
-          </option>
-        </select>
-
         <button class="recipe-ingredient-button" @click="edit_ingredient(recipe_ingredient_index)">
           {{ recipe_ingredient.name }}
         </button>
-      </p>
+
+        <div style="padding-left: 40px">
+          Alias:
+          <input
+            class="custom-input"
+            style="width: auto"
+            id="recipe-ingredient-alias"
+            v-model="recipe_ingredient.alias"
+            type="text"
+          />
+        </div>
+
+        <div style="padding-left: 40px">
+          Quantity:
+          <input
+            class="custom-input"
+            id="recipe-ingredient-quantity"
+            v-model.number="recipe_ingredient.quantity"
+            type="number"
+          />
+
+          <span style="padding: 5px">
+            <input
+              type="checkbox"
+              v-model="ingredient_checkboxes[recipe_ingredient_index]"
+              @change="update_ingredient_checkbox(recipe_ingredient_index)"
+            />
+          </span>
+
+          <input
+            v-if="ingredient_checkboxes[recipe_ingredient_index]"
+            class="custom-input-small"
+            id="recipe-ingredient-quantity"
+            v-model.number="recipe_ingredient.numerator"
+            type="number"
+          />
+
+          <span v-if="ingredient_checkboxes[recipe_ingredient_index]"> / </span>
+
+          <input
+            class="custom-input-small"
+            v-if="ingredient_checkboxes[recipe_ingredient_index]"
+            id="recipe-ingredient-quantity"
+            v-model.number="recipe_ingredient.denominator"
+            type="number"
+          />
+        </div>
+
+        <div style="padding-left: 40px">
+          Units:
+          <select
+            v-model="selected_units[recipe_ingredient_index]"
+            @change="update_recipe_ingredient_units(recipe_ingredient_index)"
+          >
+            <option v-for="(unit, unit_index) in units" :key="unit_index" :value="unit_index">
+              {{ unit.name }}
+            </option>
+          </select>
+        </div>
+      </div>
 
       <!-- Modal for editing ingredient for ingredient row -->
       <div v-if="show_edit_ingredient_modal">
@@ -518,13 +542,22 @@ export default {
     db_recipe_ingredients() {
       var db_recipe_ingredients = []
       for (const ingredient of this.recipe_ingredients) {
+        var alias = ingredient.alias
+        if (alias !== null) {
+          alias = alias.trim()
+          if (alias.length === 0) {
+            alias = null
+          }
+        }
+
         db_recipe_ingredients.push({
           recipe_id: this.recipe_id,
           ingredient_id: ingredient.ingredient_id,
           quantity: ingredient.quantity,
           numerator: ingredient.numerator,
           denominator: ingredient.denominator,
-          unit_id: ingredient.units.unit_id
+          unit_id: ingredient.units.unit_id,
+          alias: alias
           // optional: false
         })
       }

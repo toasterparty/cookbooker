@@ -59,7 +59,7 @@ header span {
       <p>{{ recipe.preamble }}</p>
       <br />
       <h2 v-if="ingredients && ingredients.length > 0" class="header-label">Ingredients</h2>
-        <div v-for="(ingredient, index) in ingredients" :key="index">
+      <div v-for="(ingredient, index) in ingredients" :key="index">
         <p
           v-if="ingredient.numerator && ingredient.denominator"
           style="display: inline"
@@ -130,10 +130,14 @@ export default {
         output += ingredient.units.name + 's '
       }
 
-      output += ingredient.name
+      if (ingredient.alias) {
+        output += ingredient.alias
+      } else {
+        output += ingredient.name
 
-      if (!use_unit) {
-        output += 's'
+        if (!use_unit) {
+          output += 's'
+        }
       }
 
       return output

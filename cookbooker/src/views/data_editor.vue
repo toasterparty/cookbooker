@@ -100,13 +100,13 @@ input[type='radio'] {
         </p>
       </div>
       <div v-else-if="selected_tab == 'Tags'">
-        <p v-for="(tag, index) in tags" :key="index">
+        <div v-for="(tag, index) in tags" :key="index">
           <button class="remove-button" @click="remove_tag(index)">x</button>
           <button class="edit-button" @click="edit_tag(index)">✏️</button>
           <div class="tag" :style="{ backgroundColor: tag.color }">
             {{ tag.name }}
           </div>
-        </p>
+        </div>
       </div>
 
       <button class="add-button" @click="show_add_new_modal">+</button>
@@ -125,9 +125,7 @@ input[type='radio'] {
           <input type="text" class="textbox" v-model="new_name" />
         </div>
 
-        <div v-if="selected_tab == 'Tags'">
-          Color: <input type="color" v-model="new_color"/>
-        </div>
+        <div v-if="selected_tab == 'Tags'">Color: <input type="color" v-model="new_color" /></div>
 
         <button @click="save_modal">Save</button>
         <button @click="close_modal">Cancel</button>

@@ -130,6 +130,43 @@ export async function get_steps_for_recipe(recipe_id) {
   }
 }
 
+export async function get_tag(tag_id) {
+  try {
+    const { data, error } = await supabase.from('tags').select('*').eq('tag_id', tag_id).single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error fetching tag:', error.message)
+  }
+}
+
+export async function get_tags_for_recipe(recipe_id) {
+  try {
+    const { data, error } = await supabase
+      .from('recipe_tag')
+      .select('*')
+      .eq('recipe_id', recipe_id)
+
+    if (error) {
+      throw error
+    }
+
+    const tags = []
+    for (var i = 0; i < data.length; i++) {
+      const tag = await get_tag(data[i].tag_id)
+      tags.push(tag)
+    }
+
+    return tags
+  } catch (error) {
+    console.error('Error fetching tags for recipe:', error.message)
+  }
+}
+
 export async function get_ingredient(ingredient_id) {
   try {
     const { data, error } = await supabase
@@ -151,6 +188,22 @@ export async function get_ingredient(ingredient_id) {
 export async function search_ingredient(query) {
   try {
     const { data, error } = await supabase.from('ingredients').select().ilike('name', `%${query}%`)
+
+    if (error) {
+      throw error
+    }
+
+    return sort_by_name(data)
+  } catch (error) {
+    console.error('Error searching for ingredient:', error.message)
+  }
+
+  return null
+}
+
+export async function search_tag(query) {
+  try {
+    const { data, error } = await supabase.from('tags').select().ilike('name', `%${query}%`)
 
     if (error) {
       throw error
@@ -581,11 +634,7 @@ async function update_tag(tag) {
 
 async function remove_tag(tag_id) {
   try {
-    const { data, error } = await supabase
-      .from('tags')
-      .delete()
-      .eq('tag_id', tag_id)
-      .single()
+    const { data, error } = await supabase.from('tags').delete().eq('tag_id', tag_id).single()
 
     if (error) {
       throw error
@@ -925,5 +974,59 @@ export async function new_step() {
     return step_id
   } catch (error) {
     console.error('Error adding new step:', error.message)
+  }
+}
+
+export async function update_recipe_tags(recipe_id, recipe_tags) {
+  /* Validate input */
+
+  if (recipe_tags == null) {
+    throw new Error('tags is null')
+  }
+
+  var data = []
+  for (const tag of recipe_tags) {
+    if (tag == null || tag.tag_id == null) {
+      throw new Error(`invalid recipe_tags: ${JSON.stringify(recipe_tags)}`)
+    }
+
+    data.push({
+      recipe_id: recipe_id,
+      tag_id: tag.tag_id
+    })
+  }
+
+  /* Delete existing recipe ingredients */
+  await drop_recipe_tags(recipe_id)
+
+  /* Add new recipe ingredients */
+  await add_recipe_tags(data)
+}
+
+async function drop_recipe_tags(recipe_id) {
+  try {
+    const { data, error } = await supabase.from('recipe_tag').delete().eq('recipe_id', recipe_id)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from recipe_tag:', error.message)
+  }
+}
+
+async function add_recipe_tags(recipe_tags) {
+  try {
+    const { data, error } = await supabase.from('recipe_tag').insert(recipe_tags)
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when adding to recipe_tag:', error.message)
   }
 }

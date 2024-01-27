@@ -340,7 +340,6 @@ header span {
             placeholder="Search..."
           />
 
-          <!-- TODO: Why isn't this alphabetical? -->
           <p
             style="display: block"
             v-if="search_results && search_results.length"
@@ -423,6 +422,52 @@ header span {
       <!-- Add step to directions -->
       <button class="add-button" @click="add_step">+</button>
 
+      <div class="custom-input-container">
+        <label class="custom-label">Tags</label>
+      </div>
+
+      <div v-for="(tag, index) in tags" :key="index">
+        <button class="remove-button" @click="remove_tag(index)">x</button>
+        <div class="tag" :style="{ backgroundColor: tag.color }">
+          {{ tag.name }}
+        </div>
+      </div>
+
+      <button class="add-button" @click="add_tag">+</button>
+
+      <!-- Modal for picking recipe tags -->
+      <div v-if="show_tag_picker_modal">
+        <div class="modal-overlay" @click="hide_tag_picker_modal"></div>
+        <div class="modal">
+          <label class="custom-label" style="margin-top: 0px" for="edit_tag">Select Tag</label>
+
+          <input
+            style="display: block"
+            type="text"
+            class="textbox"
+            id="tag_search"
+            v-model="search_query"
+            @input="search_tags"
+            placeholder="Search..."
+          />
+
+          <p
+            style="display: block"
+            v-if="search_results && search_results.length"
+            v-for="(tag, index) in search_results"
+            :key="index"
+          >
+            <button class="recipe-tag-button" @click="select_tag(search_results[index])">
+              <div class="tag" :style="{ backgroundColor: tag.color }">
+                {{ tag.name }}
+              </div>
+            </button>
+          </p>
+
+          <button class="cancel-button" @click="hide_tag_picker_modal">Cancel</button>
+        </div>
+      </div>
+
       <!-- Source -->
       <div class="custom-input-container">
         <label class="custom-label" for="recipe-source">Source</label>
@@ -462,7 +507,9 @@ export default {
       selected_ingredients: [],
       show_edit_ingredient_modal: false,
       selected_step_types: [],
-      duration_checkboxes: []
+      duration_checkboxes: [],
+      tags: null,
+      show_tag_picker_modal: false
     }
   },
   async created() {
@@ -473,6 +520,7 @@ export default {
     this.units = await api.get_units()
     this.step_types = await api.get_step_types()
     this.recipe_ingredients = await api.get_ingredients_for_recipe(this.recipe_id)
+    this.tags = await api.get_tags_for_recipe(this.recipe_id)
 
     this.refresh_step_types()
     await this.refresh_ingredients()
@@ -521,6 +569,7 @@ export default {
         await api.update_recipe_ingredients(this.recipe_id, this.db_recipe_ingredients())
         await api.update_recipe_steps(this.recipe_id, this.db_recipe_steps())
         await api.update_steps(this.db_steps())
+        await api.update_recipe_tags(this.recipe_id, this.tags)
 
         this.return_to_recipe()
       } catch (error) {
@@ -778,6 +827,35 @@ export default {
       this.steps.splice(step_index, 1)
       this.selected_step_types.splice(step_index, 1)
       this.duration_checkboxes.splice(step_index, 1)
+    },
+    remove_tag(index) {
+      this.tags.splice(index, 1)
+    },
+    add_tag() {
+      this.search_results = null
+      this.search_query = null
+      this.show_tag_picker_modal = true
+    },
+    async search_tags() {
+      if (this.search_query === null) {
+        this.search_results = null
+        return
+      }
+
+      const trimmed_query = this.search_query.trim()
+      if (trimmed_query.length === 0) {
+        this.search_results = null
+        return
+      }
+
+      this.search_results = await api.search_tag(trimmed_query)
+    },
+    hide_tag_picker_modal() {
+      this.show_tag_picker_modal = false
+    },
+    select_tag(tag) {
+      this.tags.push(tag)
+      this.hide_tag_picker_modal()
     }
   }
 }

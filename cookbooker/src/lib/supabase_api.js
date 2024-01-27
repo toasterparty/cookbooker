@@ -146,10 +146,7 @@ export async function get_tag(tag_id) {
 
 export async function get_tags_for_recipe(recipe_id) {
   try {
-    const { data, error } = await supabase
-      .from('recipe_tag')
-      .select('*')
-      .eq('recipe_id', recipe_id)
+    const { data, error } = await supabase.from('recipe_tag').select('*').eq('recipe_id', recipe_id)
 
     if (error) {
       throw error

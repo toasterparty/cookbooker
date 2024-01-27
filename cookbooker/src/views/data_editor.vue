@@ -37,8 +37,9 @@ input[type='radio'] {
 }
 
 .tag {
-  display: inline-block;
+  margin: 5px;
   padding: 5px 10px;
+  display: inline-block;
   border-radius: 15px;
   font-size: 14px;
   font-weight: bold;

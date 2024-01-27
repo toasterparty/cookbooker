@@ -35,6 +35,11 @@ header span {
 .header-label {
   margin-bottom: 10px;
 }
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+}
 </style>
 
 <!-- TODO: CSS instead of br -->
@@ -48,6 +53,18 @@ header span {
           <a :href="'/edit/' + this.$route.params.recipe_id">edit</a>
         </span>
       </header>
+
+      <div class="tags-container">
+        <div
+          v-for="(tag, index) in tags"
+          :key="index"
+          class="tag"
+          :style="{ backgroundColor: tag.color }"
+        >
+          {{ tag.name }}
+        </div>
+      </div>
+
       <img
         v-if="this.recipe.image"
         :src="
@@ -105,7 +122,8 @@ export default {
     return {
       recipe: null,
       steps: null,
-      ingredients: null
+      ingredients: null,
+      tags: null
     }
   },
   async created() {
@@ -113,6 +131,7 @@ export default {
     this.recipe = await api.get_recipe(recipe_id)
     this.steps = await api.get_steps_for_recipe(recipe_id)
     this.ingredients = await api.get_ingredients_for_recipe(recipe_id)
+    this.tags = await api.get_tags_for_recipe(recipe_id)
   },
   methods: {
     ingredient_string(ingredient) {

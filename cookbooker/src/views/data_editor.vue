@@ -35,6 +35,15 @@ input[type='radio'] {
 .edit-button:hover {
   background-color: #d4d4d4;
 }
+
+.tag {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+}
 </style>
 
 <template>
@@ -90,6 +99,15 @@ input[type='radio'] {
           {{ ingredient.name }}
         </p>
       </div>
+      <div v-else-if="selected_tab == 'Tags'">
+        <p v-for="(tag, index) in tags" :key="index">
+          <button class="remove-button" @click="remove_tag(index)">x</button>
+          <button class="edit-button" @click="edit_tag(index)">✏️</button>
+          <div class="tag" :style="{ backgroundColor: tag.color }">
+            {{ tag.name }}
+          </div>
+        </p>
+      </div>
 
       <button class="add-button" @click="show_add_new_modal">+</button>
 
@@ -106,6 +124,11 @@ input[type='radio'] {
         <div>
           <input type="text" class="textbox" v-model="new_name" />
         </div>
+
+        <div v-if="selected_tab == 'Tags'">
+          Color: <input type="color" v-model="new_color"/>
+        </div>
+
         <button @click="save_modal">Save</button>
         <button @click="close_modal">Cancel</button>
       </div>
@@ -120,7 +143,7 @@ export default {
   name: 'data_editor',
   data() {
     return {
-      tabs: ['Categories', 'Units', 'Step Types', 'Ingredients'],
+      tabs: ['Categories', 'Units', 'Step Types', 'Ingredients', 'Tags'],
       selected_tab: '',
       selected_tab_singular: '',
 
@@ -130,6 +153,7 @@ export default {
       is_edit_mode: false,
       edit_obj: null,
       new_name: null,
+      new_color: null,
 
       categories: null,
       remove_categories: null,
@@ -141,6 +165,7 @@ export default {
       remove_step_types: null,
 
       tags: null,
+      remove_tags: null,
 
       ingredients: null,
       search_query: null,
@@ -165,6 +190,9 @@ export default {
         case 'Ingredients': {
           return this.ingredients
         }
+        case 'Tags': {
+          return this.tags
+        }
         default: {
           console.error('Unexpected selected_tab')
           return null
@@ -180,6 +208,7 @@ export default {
       this.is_edit_mode = false
       this.edit_obj = null
       this.new_name = null
+      this.new_color = null
 
       this.categories = null
       this.remove_categories = null
@@ -195,6 +224,7 @@ export default {
       this.search_results = null
 
       this.tags = null
+      this.remove_tags = null
 
       switch (this.selected_tab) {
         case 'Categories': {
@@ -221,6 +251,12 @@ export default {
           this.ingredients = []
           break
         }
+        case 'Tags': {
+          this.selected_tab_singular = 'Tag'
+          this.remove_tags = []
+          this.tags = await api.get_tags()
+          break
+        }
         case '': {
           break
         }
@@ -235,6 +271,7 @@ export default {
       this.is_edit_mode = false
       this.edit_obj = {}
       this.new_name = null
+      this.new_color = null
       this.is_modal_shown = true
     },
     close_modal() {
@@ -265,6 +302,11 @@ export default {
             obj.name = this.new_name
             this.search_results.push(obj)
           }
+          break
+        }
+        case 'Tags': {
+          obj.name = this.new_name
+          obj.color = this.new_color
           break
         }
         default: {
@@ -298,6 +340,10 @@ export default {
         }
         case 'Ingredients': {
           await api.update_ingredients(this.ingredients, this.remove_ingredients)
+          break
+        }
+        case 'Tags': {
+          await api.update_tags(this.tags, this.remove_tags)
           break
         }
         default: {
@@ -375,6 +421,18 @@ export default {
       this.is_edit_mode = true
       this.edit_obj = this.search_results[index]
       this.new_name = this.edit_obj.name
+      this.is_modal_shown = true
+    },
+    remove_tag(index) {
+      const tag = this.tags[index]
+      this.remove_tags.push(tag)
+      this.tags.splice(index, 1)
+    },
+    edit_tag(index) {
+      this.is_edit_mode = true
+      this.edit_obj = this.tags[index]
+      this.new_name = this.edit_obj.name
+      this.new_color = this.edit_obj.color
       this.is_modal_shown = true
     }
   }

@@ -206,6 +206,20 @@ export async function get_step_types() {
   }
 }
 
+export async function get_tags() {
+  try {
+    const { data, error } = await supabase.from('tags').select('*')
+
+    if (error) {
+      throw error
+    }
+
+    return sort_by_name(data)
+  } catch (error) {
+    console.error('Error fetching tags:', error.message)
+  }
+}
+
 async function get_recipe_ingredients(recipe_id) {
   try {
     const { data, error } = await supabase
@@ -528,6 +542,90 @@ export async function update_ingredients(upsert_ingredients, remove_ingredients)
 
   for (const ingredient of remove_ingredients) {
     await remove_ingredient(ingredient.ingredient_id)
+  }
+}
+
+/* Tag Modification */
+
+export async function insert_tag(tag) {
+  try {
+    const { data, error } = await supabase.from('tags').insert([tag]).select()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error adding new tag:', error.message)
+  }
+}
+
+async function update_tag(tag) {
+  try {
+    const { data, error } = await supabase
+      .from('tags')
+      .update(tag)
+      .eq('tag_id', tag.tag_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when updating tag:', error.message)
+  }
+}
+
+async function remove_tag(tag_id) {
+  try {
+    const { data, error } = await supabase
+      .from('tags')
+      .delete()
+      .eq('tag_id', tag_id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error when deleting from tags:', error.message)
+  }
+}
+
+export async function update_tags(upsert_tags, remove_tags) {
+  /* Validate Input */
+
+  for (const tag of upsert_tags) {
+    if (tag == null || tag.name == null || tag.tag_id === null) {
+      throw new Error(`invalid tag: ${JSON.stringify(tag)}`)
+    }
+  }
+
+  for (const tag of remove_tags) {
+    if (tag == null || tag.tag_id == null) {
+      throw new Error(`invalid tag: ${JSON.stringify(tag)}`)
+    }
+  }
+
+  /* Add/modify tags */
+
+  for (const tag of upsert_tags) {
+    if (tag.tag_id === undefined) {
+      await insert_tag(tag)
+    } else {
+      await update_tag(tag)
+    }
+  }
+
+  /* Remove tags */
+
+  for (const tag of remove_tags) {
+    await remove_tag(tag.tag_id)
   }
 }
 

@@ -592,11 +592,13 @@ export default {
       var db_recipe_ingredients = []
       for (const ingredient of this.recipe_ingredients) {
         var alias = ingredient.alias
-        if (alias !== null) {
+        if (alias !== null && alias !== undefined) {
           alias = alias.trim()
           if (alias.length === 0) {
             alias = null
           }
+        } else {
+          alias = null
         }
 
         db_recipe_ingredients.push({

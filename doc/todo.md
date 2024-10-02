@@ -6,7 +6,7 @@
 
 # Features
 
-- **Implement tags**
+- Recipe as ingredient
 
 - Step notes
 
